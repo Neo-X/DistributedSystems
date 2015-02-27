@@ -1,0 +1,63 @@
+\documentclass[a4paper]{article}
+% \usepackage{thesis}
+% define the title
+\author{Glen Berseth}
+\title{Navigation Mesh Generation for 3D Environments}
+
+\usepackage{epsfig}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{xspace}
+\usepackage{named}
+\usepackage{hyperref}
+% \usepackage{cite}
+%\usepackage{jneurosci}
+% \usepackage{natbib}
+
+\usepackage{graphicx}
+
+\usepackage{algorithm2e}
+% \usepackage{algorithm}
+\usepackage{multirow}
+\usepackage{verbatim}
+\usepackage{soul}
+\usepackage{array}
+\setlength\extrarowheight{2pt} % or whatever amount is appropriate
+
+% I am having a hell of a time getting text colouring working in this document
+\usepackage[table]{xcolor}
+\usepackage{array,hhline}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathmorphing}
+
+\usepackage{siunitx}
+% \sisetup{output-exponent-marker = E,round-mode = figures, round-precision = 3,
+%  scientific-notation = true}
+\sisetup{fixdp,dp=3}
+
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+
+% \input{fancey/highlighting}
+\input{project_newcommands}
+%\enumi
+\begin{document}
+
+% generates the title
+\maketitle
+% insert the table of contents
+% \tableofcontents
+
+
+% \input{project_abstract}
+
+\input{project_Introduction}
+\bibliographystyle{named}
+\bibliography{project}
+
+
+%\addcontentsline{toc}{chapter}{Appendix}
+% \input{report_appendix}
+
+\end{document}
