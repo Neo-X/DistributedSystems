@@ -20,3 +20,54 @@ Benefit of this solution:
 Having a more fault tolerant system using a distributed server. 
 Reducing latency by reducing by picking good servers
 All online multiplayer systems are best effort. If we can create a system with the same responsiveness with fault tolerance then it is a success.
+
+\begin{enumerate}
+	\item Common mutiplayer model
+	\begin{figure}
+	\centering
+	\begin{tabular}{c c}
+		Peer-to-Peer & Client-Server \\
+		\includegraphics[width=0.48\linewidth]{../images/p2p-model-crop.pdf} &
+		%trim=l b r t
+		\includegraphics[width=0.48\linewidth]{../images/client-server-model-crop.pdf} \\
+		(a) & (b)
+	\end{tabular}
+
+	\caption{\label{figure:p2p-vs-ClientServer} Two mutiplayer game networking models. The model on the left (a) is a peer-to-peer model where every client sends updates directly to ever other client in the game. The second model (b) is a client server model. In this model all of the clients send updates to the server and the server send updates out to the clients.}
+	\end{figure}
+	\begin{enumerate}
+		\item latency minimization
+		\item distributed state synchronization
+		\item Avoiding cheating
+	\end{enumerate}
+	\item How Clients work
+	\begin{enumerate}
+		\item Client data
+		\item Client messaging
+	\end{enumerate}
+
+	\item How the server works
+	\begin{enumerate}
+		\item Server data
+		\item Server messaging
+	\end{enumerate}
+	\item The Game
+	\begin{enumerate}
+		\item Game data
+		\item Game events/messaging
+		\begin{enumerate}
+			\item move
+			\item fire
+		\end{enumerate}
+	\end{enumerate}
+	\item Distributing the game
+	\begin{enumerate}
+		\item {Two server example}
+		\item {Many server example}
+		\begin{enumerate}
+			\item The best serves can be choosen between two clients and most likely it will be the server on one of the two clients.
+		\end{enumerate}
+	\end{enumerate}
+\end{enumerate}
+\todo{Up this point we have really only solved fault tolerance. If we want to solve some scalability issue we will need to provide spatial segmenting of the Game world.}
+
