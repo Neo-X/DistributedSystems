@@ -21,9 +21,12 @@ Having a more fault tolerant system using a distributed server.
 Reducing latency by reducing by picking good servers
 All online multiplayer systems are best effort. If we can create a system with the same responsiveness with fault tolerance then it is a success.
 
-\begin{enumerate}
-	\item Common mutiplayer model
-	\begin{figure}
+\subsection{Multiplayer Network Design}
+
+	There are two common networking structures for multiplayer gaming. The first is \ptoP, with the structure each client sends state updated to each other client in the game. A diagram of the \ptoP communication structure is shown in Figure~\ref{figure:p2p-vs-ClientServer}(a).
+	The second, and more common, is the \clientServer design. In the \clientServer design each client sends updates to a single server and this server will relay these messages to the other clients playing the game. The communication structure for this design can be seen in Figure~\ref{figure:p2p-vs-ClientServer}(b).
+	
+\begin{figure}[ht]
 	\centering
 	\begin{tabular}{c c}
 		Peer-to-Peer & Client-Server \\
@@ -33,9 +36,49 @@ All online multiplayer systems are best effort. If we can create a system with t
 		(a) & (b)
 	\end{tabular}
 
-	\caption{\label{figure:p2p-vs-ClientServer} Two mutiplayer game networking models. The model on the left (a) is a peer-to-peer model where every client sends updates directly to ever other client in the game. The second model (b) is a client server model. In this model all of the clients send updates to the server and the server send updates out to the clients.}
+	\caption{\label{figure:p2p-vs-ClientServer} Two mutiplayer game networking models. The model on the left (a) is a \ptoP model where every client sends updates directly to ever other client in the game. The second model (b) is a \clientServer model. In this model all of the clients send updates to the server and the server send updates out to the clients.}
 	\end{figure}
+	
+	We choose to base our work off of the \clientServer model for a number of reasons
 	\begin{enumerate}
+		\item The \clientServer model tends to have less latency
+		\item The \clientServer model supports clients joining mid game
+		\item The \clientServer model is less susceptible to cheating/malicious clients.
+	\end{enumerate}
+	
+	As in most multiplayer game networking systems asynchronous communication is used. This is necessary to preserve the real-time nature of the game. Packet loss is considered not significant as a new packet with more up-to-date information will be sent soon after the lost packet.
+	
+\subsection{The Client}
+
+	The client locally simulates its own version of the game. To support this the client needs to keep a list of the other clients in the game and the most recent location of each client. This information will be stored in a map. At every simulation timestep in the game the client will send a position update to the server.
+	
+\subsection{The Server}
+
+	The server simulates its own version of the game. The server is not used just to reduce message passing but also to act as an authority over the client to prevent cheating/malicious clients from propagating false information.
+	
+	In the simulation loop for the server a number of actions occur
+	\begin{enumerate}
+		\item The server's local copy of the clients locations are updated
+		\item The server processes any events in its event queue
+		\item If the events are valid the server is updated and the result is broadcast to the clients
+	\end{enumerate}
+	On a different thread
+	\begin{enumerate}
+		\item The server accepts position updates from clients
+		\item The server verifies these updates to be valid
+		\item The server broadcasts valid client updates
+		\item the server accepts event messages and puts them in a queue for processing on the next timestep
+	\end{enumerate}
+	
+	This way the server keeps the true state of the game and informs the clients of updates to the server's state. To perform these operations the server needs to have state for the currently active clients and its own version of the game state.
+
+\subsection{The Game}
+
+	We will simulate a very basic game to use as our state to synchronize. 
+	The game has two possible actions \move{\agent}{\position} and \fire.
+\begin{enumerate}
+	\item Common multiplayer model
+		\begin{enumerate}
 		\item latency minimization
 		\item distributed state synchronization
 		\item Avoiding cheating
@@ -53,6 +96,7 @@ All online multiplayer systems are best effort. If we can create a system with t
 	\end{enumerate}
 	\item The Game
 	\begin{enumerate}
+		\item The game keeps a natural vector clock (simulation time)
 		\item Game data
 		\item Game events/messaging
 		\begin{enumerate}
@@ -69,5 +113,5 @@ All online multiplayer systems are best effort. If we can create a system with t
 		\end{enumerate}
 	\end{enumerate}
 \end{enumerate}
-\todo{Up this point we have really only solved fault tolerance. If we want to solve some scalability issue we will need to provide spatial segmenting of the Game world.}
+\todo{Up this point we have really only solved fault tolerance. If we want to solve some scalability issue we will need to provide spatial partitioning of the Game world.}
 
