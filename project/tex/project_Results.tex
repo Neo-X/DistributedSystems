@@ -4,7 +4,3 @@
 \label{sec:results}
 
 Some nice results...
-
-Our idea is to build a sample real time multiplayer game using the Distributed Server architecture. This would require us to develop the sample game and the prototype of the proposed distributed system. 
-For this work we are going to use a simplified simulation of a video game. This is preferred as the complexities of handling a full game and integration would take significant time away from the distributed systems focus. Initially we are going to focus on players/clients moving around inside of a simulated square game. This square region is designed to take the place of the spatial database in a computer simulation which is one of the key complex features that keeps track of the games state. We can easily simulate this game in Go as table or map that can be used to find the locations of players in the simulation. The clients are allowed to affect other clients by “shooting” at other players within shooting distance. This particular arrangement is going to cause many arguments over who shot first, which is what we want to examine.
-Each server can keep track of a number of clients. As the clients are moving around in the game they will send updates to the server that the client is being simulated on  and receive an acknowledgement or an overwrite. In order to support fault tolerance each client will be simulated on more than one server. We should be able to kill one server/node and the game will continue.
