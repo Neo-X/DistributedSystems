@@ -38,7 +38,19 @@
 \subsection{Distributed Servers}
 \label{subsec:distributed-servers}
 
-	We construct a distributed server model to enable better failure handling in our system. Each client will be paired with a server. Each server will act as the authoritative server for a subset of the clients. The authoritative server for a particular client will depend on the event/action. 
+	We construct a distributed server model (see Figure~\ref{figure:server-models}(b)) to enable better failure handling in our system. Each client will be paired with a server. Each server will act as the authoritative server for a subset of the clients. The authoritative server for a particular client will depend on the event/action. 
+	
+	\begin{figure}[ht]
+	\centering
+	\begin{tabular}{c c}
+		Client-Server & Distributed Server \\
+		\includegraphics[width=0.44\linewidth]{../images/client-server-model-crop.pdf} &
+		\includegraphics[width=0.48\linewidth]{../images/client-distributed-server-model-crop.pdf} \\
+		(a) & (b)
+	\end{tabular}
+
+	\caption{\label{figure:server-models} The first model (a) is a \clientServer model. In this model all of the clients send updates to the server and the server send updates out to the clients. In the second model (b) the server is distributed and clients communicate with many servers.}
+	\end{figure}
 	
 	\subsubsection{Protocol and Messaging}
 	
