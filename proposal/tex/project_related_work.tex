@@ -1,0 +1,21 @@
+
+\section{Related Work}
+
+\todo{Re-organize this and include some references}
+
+The first online multiplayer systems used peer-to-peer lockstep. With this method every client starts out in the same initial state and broadcasts every move made. This method works well for games that have clearly defined states and won’t be hindered by slow clients that have high latency~\cite{DOOMfaq}. 
+
+To have better real-time support systems switched to a client/server model. With this model the state of the game is stored on the server and clients send in updates. This works well as latency is determined by the client to server connection (no slow client(s) halting the game). However, this was still too slow for real-time online games, which lead to the introduction of client-side prediction. Simply put client-side prediction allows the client to simulate its own version of the game (sending the results to the server) but the server can still step in and override the client's game state. This creates complexity in handling server overrides on clients smoothly (not just in code but also in animation and audio). There is a method for lag compensation, where the server runs in the past (simulation time), but we won’t go into this.
+
+This gets very complicated, why have all the infrastructure? Why not just use a peer-to-peer (not lockstep) method? Two reasons, the first is that players could not join a game in progress. Second, the client can (and will) cheat, sending faulty position information to everyone in order to gain an advantage.
+
+It would be nice if we could completely trust clients but we can’t. What if we could trust them a little? If we can trust clients a little we can use them as servers. If we can have a client as server we might be able to reduce latency by choosing the best client to act as the server.
+
+What has not been mentioned in this discussion is fault tolerance. A client/server model has a single point of failure, the server. This can be very bothersome to players of the game that have invested a large amount of time into the game. 
+
+Also having the single server model results in little fault tolerance. Not to mention the company has to construct many expensive servers so the clients can play.
+
+Benefit of this solution:
+Having a more fault tolerant system using a distributed server. 
+Reducing latency by reducing by picking good servers
+All online multiplayer systems are best effort. If we can create a system with the same responsiveness with fault tolerance then it is a success.
