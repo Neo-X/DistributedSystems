@@ -7,8 +7,13 @@
 *	Author: Glen & Ravjot
 */
 package main
+
 import(
 	"fmt"
+	"flag"
+	"net"
+	// "sync"
+	// "strconv"
 )
 
 
@@ -20,6 +25,58 @@ import(
 */
 
 func main(){
+	
+	
+	clientLink := flag.String("clientAddress", "127.0.0.1:10000", "The ip address clients should use to connect to this service")
+	logFilePtr := flag.String("logfile", "GameServer", "The log file for the kv Service.")
+	flag.Parse()
+	
+	fmt.Println("clientLink:", *clientLink)
+    fmt.Println("logFile:", *logFilePtr)
+    
+    udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
+
+    if err != nil {
+       fmt.Println("error resolving UDP address on ", *clientLink)
+       fmt.Println(err)
+       return
+   }
+
+   conn ,err := net.ListenUDP("udp",udpAddress)
+
+   if err != nil {
+        fmt.Println("error listening on UDP port ", *clientLink)
+        fmt.Println(err)
+        return
+   }
+        
+    defer conn.Close()
+	var buf []byte = make([]byte, 1500)   
+    for n := int64(0); n >= 0; n++ {
+	 	n,address, err := conn.ReadFromUDP(buf)
+	 	if err != nil {
+            fmt.Println("error reading data from connection")
+            fmt.Println(err)
+            return
+        }
+        if address != nil {
+            fmt.Println("got message from ", address, " with n = ", n)
+            if n > 0 {
+            	fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
+            }
+            /* conn, err := net.DialUDP("udp", nil, address)
+            if err != nil {
+            	fmt.Println("Error connecting to UDP client")
+		        fmt.Println(err)
+            }*/
+            n, err :=	conn.WriteToUDP([]byte("Thank you for your message"), address)
+		    if err != nil {
+		        fmt.Println("WriteUDP Message", n)
+		        fmt.Println(err)
+		    } 
+        }
+	 }
+   
 	
 }
 
