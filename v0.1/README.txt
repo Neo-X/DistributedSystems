@@ -25,3 +25,13 @@ destory()
 {"action":"destory", "agent":"9"}
 This is good for now
 
+#################
+# An action that is separate from the game (sort of)
+# sent from a new client to the server
+{"action":"join"}
+
+# Responce to new client joining game
+# Clients id and agent id
+{"action":"join-accept", "client":0, "agent":0, "location":[x,y,z]}
+
+

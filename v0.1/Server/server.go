@@ -16,6 +16,9 @@ import(
 	// "strconv"
 )
 
+var clientAgentMap map[string]*string // A map from client to the agent controlled by that client
+var nodes map[string]*net.UDPAddr // A map of the node name to the client connection to that node
+
 
 /***
 *	Function Name: 	main()
@@ -23,16 +26,18 @@ import(
 *	Pre-cond:		
 *	Post-cond:		Call the service functions
 */
-
 func main(){
 	
 	
 	clientLink := flag.String("clientAddress", "127.0.0.1:10000", "The ip address clients should use to connect to this service")
-	logFilePtr := flag.String("logfile", "GameServer", "The log file for the kv Service.")
+	logFilePtr := flag.String("logfile", "GameServer", "The log file for the GameServer.")
 	flag.Parse()
 	
 	fmt.Println("clientLink:", *clientLink)
     fmt.Println("logFile:", *logFilePtr)
+    
+    nodes = make(map[string]*net.UDPAddr)
+    clientAgentMap = make(map[string]*string)
     
     udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
 
