@@ -11,7 +11,20 @@ import(
 	"fmt"
 	"net"
 	"time"
+	"encoding/json"
+	"../dsgame"
 )
+
+
+
+/*
+	global varaibles for client
+*/
+
+var client string // string to idetify this client
+var agent dsgame.Agent // string to identify the agent for this client
+// var conn *net.UDPConn // Connection to the GameServer
+var simulationTime int64
 
 
 /***
@@ -31,8 +44,18 @@ func main(){
         fmt.Println(err)
         return
     }
+
+	join(conn)	
+	
 	for n := int64(0); n >= 0; n++ {
-		n, err :=	conn.Write([]byte("Hello"))
+		m := dsgame.Message{dsgame.UpdateLocationAction, client, agent.Name, simulationTime, agent.Location, ""}
+		b, err := json.Marshal(m)
+		if err != nil {
+	        fmt.Println("Problem marshalling struct")
+	        fmt.Println(err)
+	    } 
+		
+		n, err :=	conn.Write(b)
 	    if err != nil {
 	        fmt.Println("WriteUDP")
 	        fmt.Println(err)
@@ -48,6 +71,7 @@ func main(){
 		// fmt.Println("Wrote ", n, "bytes")
 		fmt.Println(string(buf[0:n]))
 		time.Sleep(1 * time.Second)
+		agent.Location[1] = agent.Location[1] + 1.0
 	}
 
 	conn.Close()
@@ -71,4 +95,43 @@ func move(){
 *	Post-cond:		return success or returns failure
 */
 func fire(){
+}
+
+/***
+*	Function Name: 	join()
+*	Desc:			The function requests to join the game
+*/
+func join( conn *net.UDPConn ){
+	
+	m := dsgame.Message{dsgame.JoinAction, "", "", 0, [3]float64{0.0,0.0,0.0}, ""}
+	b, err := json.Marshal(m)
+	if err != nil {
+        fmt.Println("Problem marshalling struct")
+        fmt.Println(err)
+    } 
+	
+	n, err := conn.Write(b)
+	var buf []byte = make([]byte, 1500) 
+	n, _, err = conn.ReadFromUDP(buf) 
+	// _, _, err = conn.ReadFromUDP(buf) 
+    if err != nil {
+        fmt.Println("ReadFromUDP")
+        fmt.Println(err)
+    } 
+	// fmt.Println("Wrote ", n, "bytes")
+	fmt.Println(string(buf[0:n]))
+	err = json.Unmarshal(buf[0:n], &m)
+	if err != nil {
+		fmt.Println("Error unmarshalling message")
+        fmt.Println(err)
+	}
+	client = m.Client
+	agent = dsgame.Agent{m.Agent, m.Location}
+	simulationTime = m.TimeStamp
+	
+	fmt.Println("clientName: " ,  client)
+	fmt.Println("agent: " ,  agent.Name, " location: ", agent.Location)
+	fmt.Println("simulationTime: ", simulationTime)
+		
+	
 }

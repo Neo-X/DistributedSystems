@@ -12,6 +12,8 @@ import(
 	"fmt"
 	"flag"
 	"net"
+	"../dsgame"
+	"encoding/json"
 	// "sync"
 	// "strconv"
 )
@@ -64,10 +66,14 @@ func main(){
             fmt.Println(err)
             return
         }
+	 	
         if address != nil {
             fmt.Println("got message from ", address, " with n = ", n)
             if n > 0 {
             	fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
+            	////// Everything should be good now
+            	handleMessage(conn , address, buf[0:n])
+            	
             }
             /* conn, err := net.DialUDP("udp", nil, address)
             if err != nil {
@@ -92,7 +98,8 @@ func main(){
 *	Pre-cond:		takes connection argument and the new location
 *	Post-cond:		list is updated with new location or return failure
 */
-func serviceMoveReq(){
+func serviceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
+	
 }
 
 
@@ -102,5 +109,58 @@ func serviceMoveReq(){
 *	Pre-cond:		takes connection argument and name of client who is fired
 *	Post-cond:		Destroy the client or returns failure
 */
-func serviceFireReq(){
+func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
+}
+
+/***
+*	Function Name: 	serviceJoinReq()
+*	Desc:			The function provide service to a client requesting to join the game
+*	Pre-cond:		takes connection argument ....
+*	Post-cond:		Client should be registard in the game
+*/
+func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Message){
+	msg.Action = dsgame.AcceptJointAction
+	msg.Client = "client0"
+	msg.Agent = "agent0"
+	msg.TimeStamp = 0
+	msg.Location = [3]float64{1.0,2.0,3.0}
+	msg.Target = ""
+	
+	buf, err := json.Marshal(msg)
+	if err != nil {
+        fmt.Println("Problem Marshaling Joint Req message")
+        fmt.Println(err)
+    } 
+	
+	n, err :=	conn.WriteToUDP(buf, clientAddr)
+    if err != nil {
+        fmt.Println("WriteUDP Message", n)
+        fmt.Println(err)
+    } 
+	
+}
+
+/***
+*	Function Name: 	serviceJoinReq()
+*	Desc:			The function provide service to a client requesting to join the game
+*	Pre-cond:		takes connection argument ....
+*	Post-cond:		Client should be registard in the game
+*/
+func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte){
+	var msg dsgame.Message
+	err := json.Unmarshal(buf, &msg)
+	if err != nil {
+		fmt.Println("Error handling message")
+		fmt.Println(err)
+		return
+	}
+	
+	if msg.Action == dsgame.JoinAction {
+		serviceJoinReq(conn, clientAddr, msg)
+	} else if msg.Action == dsgame.UpdateLocationAction {
+        serviceUpdateLocationReq(conn, msg)
+    } else {
+        fmt.Println("Message not understood: ")
+    }
+	
 }
