@@ -11,7 +11,6 @@
 
 package dsgame
 
-
 // exported variables must start with a capital letter....
 const UpdateLocationAction string = "UpdateLocation"
 const JoinAction string = "Join"
@@ -35,4 +34,9 @@ type Agent struct {
 	Name string
 	Location [3]float64
 }
-	
+
+type Agents struct {
+	//Agent string
+	TimeStamp int64
+	Location [3]float64
+}	

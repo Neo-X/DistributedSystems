@@ -15,11 +15,14 @@ import(
 	"../dsgame"
 	"encoding/json"
 	// "sync"
-	// "strconv"
+	"strconv"
 )
 
-var clientAgentMap map[string]*string // A map from client to the agent controlled by that client
-var nodes map[string]*net.UDPAddr // A map of the node name to the client connection to that node
+var clientAgentMap map[string]string // A map from client to the agent controlled by that client
+var nodes map[string]*net.UDPConn // A map of the node name to the client connection to that node
+
+var agentsDB map[string]dsgame.Agents // Database of all agent details [client -> <details>]
+var clientOffset int // to generate new client name and agent name for new joinee
 
 
 /***
@@ -30,6 +33,7 @@ var nodes map[string]*net.UDPAddr // A map of the node name to the client connec
 */
 func main(){
 	
+	clientOffset = 0
 	
 	clientLink := flag.String("clientAddress", "127.0.0.1:10000", "The ip address clients should use to connect to this service")
 	logFilePtr := flag.String("logfile", "GameServer", "The log file for the GameServer.")
@@ -38,8 +42,9 @@ func main(){
 	fmt.Println("clientLink:", *clientLink)
     fmt.Println("logFile:", *logFilePtr)
     
-    nodes = make(map[string]*net.UDPAddr)
-    clientAgentMap = make(map[string]*string)
+    nodes = make(map[string]*net.UDPConn)
+    clientAgentMap = make(map[string]string)
+    agentsDB = make(map[string]dsgame.Agents)
     
     udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
 
@@ -99,7 +104,16 @@ func main(){
 *	Post-cond:		list is updated with new location or return failure
 */
 func serviceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
-	
+	// update server agent database
+	if nodes[msg.Client] == conn && clientAgentMap[msg.Client] == msg.Agent {
+		var tmpObj dsgame.Agents
+		tmpObj.TimeStamp = msg.TimeStamp
+		tmpObj.Location = [3]float64{msg.Location[0],msg.Location[1],msg.Location[2]}
+		agentsDB[msg.Client] = tmpObj
+		fmt.Printf("Location updated by:" + msg.Client)
+	} else {
+		// if something seems fishy
+	}
 }
 
 
@@ -119,9 +133,23 @@ func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
 *	Post-cond:		Client should be registard in the game
 */
 func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Message){
+	
+	clientName, agentName := getNextClientID()
+
+	// Add to server agent database
+	clientAgentMap[clientName] = agentName
+	nodes[clientName] = conn
+
+	var tmpObj dsgame.Agents
+	//	tmpObj.Agent = agentName
+	tmpObj.TimeStamp = 0
+	tmpObj.Location = [3]float64{1.0,2.0,3.0}
+	agentsDB[clientName] = tmpObj
+
+	// Prepare response for the request
 	msg.Action = dsgame.AcceptJointAction
-	msg.Client = "client0"
-	msg.Agent = "agent0"
+	msg.Client = clientName
+	msg.Agent = agentName
 	msg.TimeStamp = 0
 	msg.Location = [3]float64{1.0,2.0,3.0}
 	msg.Target = ""
@@ -164,3 +192,17 @@ func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte){
     }
 	
 }
+
+
+/***
+*	Function Name: 	getNextClientID()
+*	Desc:			The function provide next client and agent name to a client requesting to join the game
+*	Pre-cond:		takes connection argument ....
+*	Post-cond:		new client and agent name should be returned
+*/
+func getNextClientID() (string,string){
+	clientOffset++
+	return "client" + strconv.Itoa(clientOffset), "agent" + strconv.Itoa(clientOffset)
+}
+
+

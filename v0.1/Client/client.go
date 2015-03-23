@@ -46,8 +46,29 @@ func main(){
     }
 
 	join(conn)	
-	
+
+	// simulating temporary sendUpdateLocation()	
 	for n := int64(0); n >= 0; n++ {
+		sendUpdateLocation(conn)
+		time.Sleep(1 * time.Second)
+		agent.Location[1] = agent.Location[1] + 1.0
+	}
+
+	// To update a location of an agent
+	// 1. update location in agent.Location
+	// 2. call sendUpdateLocation()
+
+	conn.Close()
+}
+
+
+/***
+*	Function Name: 	sendUpdateLocation()
+*	Desc:			The function requests updateLocation
+*	Pre-cond:		takes connection argument
+*	Post-cond:		retuen success or return failure
+*/
+func sendUpdateLocation(conn *net.UDPConn){
 		m := dsgame.Message{dsgame.UpdateLocationAction, client, agent.Name, simulationTime, agent.Location, ""}
 		b, err := json.Marshal(m)
 		if err != nil {
@@ -70,21 +91,6 @@ func main(){
 	    } 
 		// fmt.Println("Wrote ", n, "bytes")
 		fmt.Println(string(buf[0:n]))
-		time.Sleep(1 * time.Second)
-		agent.Location[1] = agent.Location[1] + 1.0
-	}
-
-	conn.Close()
-}
-
-
-/***
-*	Function Name: 	move()
-*	Desc:			The function requests move
-*	Pre-cond:		takes connection argument and the new location
-*	Post-cond:		retuen success or return failure
-*/
-func move(){
 }
 
 
