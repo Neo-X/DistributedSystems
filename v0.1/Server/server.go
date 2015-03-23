@@ -124,7 +124,7 @@ func serviceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
 *	Post-cond:		Destroy the client or returns failure
 */
 func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
-	fmt.Printf("serviceFireReq function called")
+	fmt.Printf("Target Received M: %f  C: %f  Q: %f\n", msg.Target.M , msg.Target.C, msg.Target.Q)
 	// destroy the client if valid
 }
 
@@ -154,7 +154,7 @@ func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	msg.Agent = agentName
 	msg.TimeStamp = 0
 	msg.Location = [3]float64{1.0,2.0,3.0}
-	msg.Target = ""
+	//msg.Target = ""
 	
 	buf, err := json.Marshal(msg)
 	if err != nil {
