@@ -50,6 +50,7 @@ func main(){
 	// simulating temporary sendUpdateLocation()	
 	for n := int64(0); n >= 0; n++ {
 		sendUpdateLocation(conn)
+		fire(conn)
 		time.Sleep(1 * time.Second)
 		agent.Location[1] = agent.Location[1] + 1.0
 	}
@@ -100,7 +101,29 @@ func sendUpdateLocation(conn *net.UDPConn){
 *	Pre-cond:		takes connection argument and name of client who is fired
 *	Post-cond:		return success or returns failure
 */
-func fire(){
+func fire(conn * net.UDPConn){
+		m := dsgame.Message{dsgame.FireAction, client, agent.Name, simulationTime, agent.Location, ""}
+		b, err := json.Marshal(m)
+		if err != nil {
+	        fmt.Println("Problem marshalling struct")
+	        fmt.Println(err)
+	    } 
+		
+		n, err :=	conn.Write(b)
+	    if err != nil {
+	        fmt.Println("WriteUDP")
+	        fmt.Println(err)
+	    } 
+	
+		var buf []byte = make([]byte, 1500) 
+		n, _, err = conn.ReadFromUDP(buf) 
+		// _, _, err = conn.ReadFromUDP(buf) 
+	    if err != nil {
+	        fmt.Println("ReadFromUDP")
+	        fmt.Println(err)
+	    } 
+		// fmt.Println("Wrote ", n, "bytes")
+		fmt.Println(string(buf[0:n]))
 }
 
 /***

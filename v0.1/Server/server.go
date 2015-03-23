@@ -124,6 +124,8 @@ func serviceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
 *	Post-cond:		Destroy the client or returns failure
 */
 func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
+	fmt.Printf("serviceFireReq function called")
+	// destroy the client if valid
 }
 
 /***
@@ -187,9 +189,11 @@ func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte){
 		serviceJoinReq(conn, clientAddr, msg)
 	} else if msg.Action == dsgame.UpdateLocationAction {
         serviceUpdateLocationReq(conn, msg)
-    } else {
-        fmt.Println("Message not understood: ")
-    }
+	} else if msg.Action == dsgame.FireAction {
+				serviceFireReq(conn, msg)
+  } else {
+     fmt.Println("Message not understood: ")
+  }
 	
 }
 
