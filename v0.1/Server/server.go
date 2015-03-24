@@ -132,14 +132,28 @@ func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
 	// destroy the client if valid
 	
 	for key, value := range agentsDB {
- 	   fmt.Println("agent:", key, " agent Location:", value.Location)
+ 	   // fmt.Println("agent:", key, " agent Location:", value.Location)
  	   if (key != msg.Client ) { // Ignore intersections with self
 			if (dsgame.RayHitsAgent(value.Location, pos, msg.Target)) {
- 	   			fmt.Println("Ray hit agent", key) 
+ 	   			// fmt.Println("Ray hit agent", key)
+ 	   			handleDestroyReq(conn, value) 
  	   		} 	   	
  	   }
  	}
 }
+
+
+/***
+*	Function Name: 	handleDestroyReq()
+*	Desc:			The function provide service to destroy agents that are shot
+*	Pre-cond:		takes connection argument and name of agent that is destoroid
+*	Post-cond:		Destroy the agent, send it a new random location
+*/
+func handleDestroyReq(conn *net.UDPConn, agent dsgame.Agents) {
+	
+	
+}
+
 
 /***
 *	Function Name: 	serviceJoinReq()

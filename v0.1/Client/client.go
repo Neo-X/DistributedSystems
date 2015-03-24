@@ -34,6 +34,9 @@ var simulationTime int64
 *	Desc:			The main function for client
 *	Pre-cond:		
 *	Post-cond:		Call the request functions
+
+This is going to need to have two threads. One it is action on and another 
+in the background listening for notofications from the server.
 */
 
 func main(){
