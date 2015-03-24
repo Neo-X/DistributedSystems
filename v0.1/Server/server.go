@@ -13,6 +13,8 @@ import(
 	"flag"
 	"net"
 	"../dsgame"
+	"../s3dm"
+	// "../fixed"
 	"encoding/json"
 	// "sync"
 	"strconv"
@@ -78,7 +80,7 @@ func main(){
             	fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
             	////// Everything should be good now
             	handleMessage(conn , address, buf[0:n])
-            	
+     			printState()       	
             }
             /* conn, err := net.DialUDP("udp", nil, address)
             if err != nil {
@@ -108,9 +110,9 @@ func serviceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
 	if nodes[msg.Client] == conn && clientAgentMap[msg.Client] == msg.Agent {
 		var tmpObj dsgame.Agents
 		tmpObj.TimeStamp = msg.TimeStamp
-		tmpObj.Location = [3]float64{msg.Location[0],msg.Location[1],msg.Location[2]}
+		tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
 		agentsDB[msg.Client] = tmpObj
-		fmt.Printf("Location updated by:" + msg.Client)
+		fmt.Println("Location updated by:" + msg.Client)
 	} else {
 		// if something seems fishy
 	}
@@ -124,8 +126,19 @@ func serviceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
 *	Post-cond:		Destroy the client or returns failure
 */
 func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
-	// fmt.Printf("Target Received M: %f  C: %f  Q: %f\n", msg.Target.M , msg.Target.C, msg.Target.Q)
+	fmt.Println("Firing projectile  ", msg.Target)
+	fmt.Println("From agent  ", msg.Client)
+	pos := agentsDB[msg.Client].Location
 	// destroy the client if valid
+	
+	for key, value := range agentsDB {
+ 	   fmt.Println("agent:", key, " agent Location:", value.Location)
+ 	   if (key != msg.Client ) { // Ignore intersections with self
+			if (dsgame.RayHitsAgent(value.Location, pos, msg.Target)) {
+ 	   			fmt.Println("Ray hit agent", key) 
+ 	   		} 	   	
+ 	   }
+ 	}
 }
 
 /***
@@ -145,7 +158,8 @@ func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	var tmpObj dsgame.Agents
 	//	tmpObj.Agent = agentName
 	tmpObj.TimeStamp = 0
-	tmpObj.Location = [3]float64{1.0,2.0,3.0}
+	
+	tmpObj.Location = s3dm.V3{1.0,3.0,-2.0}
 	agentsDB[clientName] = tmpObj
 
 	// Prepare response for the request
@@ -153,7 +167,7 @@ func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	msg.Client = clientName
 	msg.Agent = agentName
 	msg.TimeStamp = 0
-	msg.Location = [3]float64{1.0,2.0,3.0}
+	msg.Location = s3dm.V3{1.0,2.0,30.0}
 	//msg.Target = ""
 	
 	buf, err := json.Marshal(msg)
@@ -209,4 +223,13 @@ func getNextClientID() (string,string){
 	return "client" + strconv.Itoa(clientOffset), "agent" + strconv.Itoa(clientOffset)
 }
 
-
+/*
+	Print the current state of the game for this server
+*/
+func printState() {
+	
+	fmt.Println("Server game state")
+	for key, value := range agentsDB {
+ 	   fmt.Println("agent:", key, "time:", value.TimeStamp, " agent Location:", value.Location)	
+ 	   }
+}

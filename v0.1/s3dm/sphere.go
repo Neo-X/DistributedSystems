@@ -21,7 +21,14 @@ func (s *Sphere) Normal(p Position) V3 {
 	return delta.Unit()
 }
 
-func (s *Sphere) Intersect(r *Ray) (Position, V3) {
+/*
+	Returns the point of intersection and the normal at that point if 
+	there is an intersection
+	Returns two empty vectors otherwise????
+	
+	I don't think this works perfectly
+*/
+func (s *Sphere) Intersect(r *Ray) (bool, Position, V3) {
 	pos := s.Position
 	ro, rd := r.Origin, r.Dir
 	rp := ro.Sub(pos).V3()
@@ -48,7 +55,7 @@ func (s *Sphere) Intersect(r *Ray) (Position, V3) {
 
 		// Sphere behind ray
 		if t1 < 0 {
-			return Position{}, V3{}
+			return false, Position{}, V3{}
 		}
 
 		if t0 < 0 {
@@ -59,7 +66,7 @@ func (s *Sphere) Intersect(r *Ray) (Position, V3) {
 
 		intersection := ro.Addf(rd.Muls(t))
 		normal := s.Normal(intersection)
-		return intersection, normal
+		return true, intersection, normal
 	}
-	return Position{}, V3{}
+	return false, Position{}, V3{}
 }
