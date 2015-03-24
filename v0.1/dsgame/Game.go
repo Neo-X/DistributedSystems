@@ -11,6 +11,10 @@
 
 package dsgame
 
+import(
+	"../s3dm"
+)
+
 // exported variables must start with a capital letter....
 const UpdateLocationAction string = "UpdateLocation"
 const JoinAction string = "Join"
@@ -32,7 +36,7 @@ type Message struct {
     Agent string
     TimeStamp int64
     Location [3]float64
-    Target FireTarget
+    Target s3dm.Ray
 }
 
 type Agent struct {

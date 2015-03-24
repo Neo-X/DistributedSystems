@@ -124,7 +124,7 @@ func serviceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
 *	Post-cond:		Destroy the client or returns failure
 */
 func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
-	fmt.Printf("Target Received M: %f  C: %f  Q: %f\n", msg.Target.M , msg.Target.C, msg.Target.Q)
+	// fmt.Printf("Target Received M: %f  C: %f  Q: %f\n", msg.Target.M , msg.Target.C, msg.Target.Q)
 	// destroy the client if valid
 }
 
