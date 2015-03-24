@@ -15,6 +15,7 @@ import(
 	"fmt"
 	"../s3dm"
 	"../fixed"
+	"math/rand"
 )
 
 // exported variables must start with a capital letter....
@@ -26,6 +27,8 @@ const AcceptJointAction string = "AcceptJoin"
 
 const FireDistance float64 = 7.0
 const AgentRadius float64 = 0.5
+const GameLowerBound float64 = -10.0
+const GameUpperBound float64 = 10.0 
 
 const FirstQuadrant int64 = 1
 const SecondQuadrant int64 = 2
@@ -89,3 +92,13 @@ func RayHitsAgent(agentLoc, rayOrigin, rayDir s3dm.V3) bool {
 	return _hit
 	
 } 
+
+var _rand *rand.Rand = rand.New(rand.NewSource(99))
+func GetRandomLocation() s3dm.V3 {
+	// _rand := rand.New(rand.NewSource(99))
+	x := (_rand.Float64() * (GameUpperBound - GameLowerBound)) + GameLowerBound
+	y := (_rand.Float64() * (GameUpperBound - GameLowerBound)) + GameLowerBound
+	z := (_rand.Float64() * (GameUpperBound - GameLowerBound)) + GameLowerBound 
+	
+	return s3dm.V3{x,y,z}
+}

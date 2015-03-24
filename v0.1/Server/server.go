@@ -167,7 +167,9 @@ func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	msg.Client = clientName
 	msg.Agent = agentName
 	msg.TimeStamp = 0
-	msg.Location = s3dm.V3{1.0,2.0,30.0}
+	// pick random location
+	msg.Location = dsgame.GetRandomLocation()
+	
 	//msg.Target = ""
 	
 	buf, err := json.Marshal(msg)
@@ -180,7 +182,13 @@ func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
     if err != nil {
         fmt.Println("WriteUDP Message", n)
         fmt.Println(err)
-    } 
+    }
+    
+    // If everything was sent update the DB
+    var _agent dsgame.Agents
+    _agent.Location = msg.Location
+    _agent.TimeStamp = 0
+    agentsDB[msg.Client] = _agent 
 	
 }
 
