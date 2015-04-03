@@ -43,8 +43,7 @@ func main(){
 	service := "127.0.0.1:10000"
 	server, err := net.ResolveUDPAddr("udp",service)
 	conn, err := net.DialUDP("udp", nil, server)
-
-	if err != nil {
+		if err != nil {
         fmt.Println("Error connecting to " , service)
         fmt.Println(err)
         return

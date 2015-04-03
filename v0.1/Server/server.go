@@ -42,60 +42,67 @@ func main(){
 	flag.Parse()
 	
 	fmt.Println("clientLink:", *clientLink)
-    fmt.Println("logFile:", *logFilePtr)
+  fmt.Println("logFile:", *logFilePtr)
     
-    nodes = make(map[string]*net.UDPConn)
-    clientAgentMap = make(map[string]string)
-    agentsDB = make(map[string]dsgame.Agents)
+  nodes = make(map[string]*net.UDPConn)
+  clientAgentMap = make(map[string]string)
+  agentsDB = make(map[string]dsgame.Agents)
     
-    udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
+  udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
 
-    if err != nil {
-       fmt.Println("error resolving UDP address on ", *clientLink)
-       fmt.Println(err)
-       return
-   }
+  if err != nil {
+		fmt.Println("error resolving UDP address on ", *clientLink)
+		fmt.Println(err)
+		return
+  }
 
-   conn ,err := net.ListenUDP("udp",udpAddress)
+  conn ,err := net.ListenUDP("udp",udpAddress)
 
-   if err != nil {
-        fmt.Println("error listening on UDP port ", *clientLink)
-        fmt.Println(err)
-        return
-   }
+	if err != nil {
+		fmt.Println("error listening on UDP port ", *clientLink)
+		fmt.Println(err)
+		return
+	}
         
-    defer conn.Close()
+  defer conn.Close()
+
 	var buf []byte = make([]byte, 1500)   
-    for n := int64(0); n >= 0; n++ {
+
+
+  for n := int64(0); n >= 0; n++ {
 	 	n,address, err := conn.ReadFromUDP(buf)
 	 	if err != nil {
-            fmt.Println("error reading data from connection")
-            fmt.Println(err)
-            return
-        }
+			fmt.Println("error reading data from connection")
+			fmt.Println(err)
+     	return
+    }
 	 	
-        if address != nil {
-            fmt.Println("got message from ", address, " with n = ", n)
-            if n > 0 {
-            	fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
-            	////// Everything should be good now
-            	handleMessage(conn , address, buf[0:n])
-     			printState()       	
-            }
-            /* conn, err := net.DialUDP("udp", nil, address)
-            if err != nil {
-            	fmt.Println("Error connecting to UDP client")
+    if address != nil {
+    	fmt.Println("got message from ", address, " with n = ", n)
+
+      if n > 0 {
+      	fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
+        ////// Everything should be good now
+        handleMessage(conn , address, buf[0:n])
+     		printState()       	
+      }
+
+      /* conn, err := net.DialUDP("udp", nil, address)
+         if err != nil {
+           	fmt.Println("Error connecting to UDP client")
 		        fmt.Println(err)
-            }*/
-            n, err :=	conn.WriteToUDP([]byte("Thank you for your message"), address)
-		    if err != nil {
-		        fmt.Println("WriteUDP Message", n)
-		        fmt.Println(err)
-		    } 
-        }
-	 }
-   
-	
+         }*/
+      n, err :=	conn.WriteToUDP([]byte("Thank you for your message"), address)
+
+		 	if err != nil {
+		  	fmt.Println("WriteUDP Message", n)
+		    fmt.Println(err)
+		  } 
+
+		}
+	}
+
+
 }
 
 
@@ -132,14 +139,15 @@ func serviceFireReq(conn *net.UDPConn, msg dsgame.Message){
 	// destroy the client if valid
 	
 	for key, value := range agentsDB {
- 	   // fmt.Println("agent:", key, " agent Location:", value.Location)
- 	   if (key != msg.Client ) { // Ignore intersections with self
+ 		// fmt.Println("agent:", key, " agent Location:", value.Location)
+ 	  if (key != msg.Client ) { // Ignore intersections with self
 			if (dsgame.RayHitsAgent(value.Location, pos, msg.Target)) {
- 	   			// fmt.Println("Ray hit agent", key)
- 	   			handleDestroyReq(conn, value) 
- 	   		} 	   	
- 	   }
+ 	   		// fmt.Println("Ray hit agent", key)
+ 	   		handleDestroyReq(conn, value) 
+ 	   	} 	   	
+ 	  }
  	}
+
 }
 
 
@@ -193,16 +201,16 @@ func serviceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
     } 
 	
 	n, err :=	conn.WriteToUDP(buf, clientAddr)
-    if err != nil {
-        fmt.Println("WriteUDP Message", n)
-        fmt.Println(err)
-    }
+	if err != nil {
+		fmt.Println("WriteUDP Message", n)
+		fmt.Println(err)
+	}
     
-    // If everything was sent update the DB
-    var _agent dsgame.Agents
-    _agent.Location = msg.Location
-    _agent.TimeStamp = 0
-    agentsDB[msg.Client] = _agent 
+	// If everything was sent update the DB
+	var _agent dsgame.Agents
+	_agent.Location = msg.Location
+  _agent.TimeStamp = 0
+  agentsDB[msg.Client] = _agent 
 	
 }
 
