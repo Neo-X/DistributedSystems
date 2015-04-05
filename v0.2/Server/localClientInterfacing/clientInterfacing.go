@@ -78,47 +78,46 @@ func handleDestroyReq(conn *net.UDPConn, agent dsgame.Agents) {
 *	Post-cond:		Client should be registard in the game
 */
 func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Message){
-	
-	clientName, agentName := getNextClientID()
+	server, err := net.ResolveUDPAddr("udp",header.CentralServerIP_Port)
+	conn_centralServer, err := net.DialUDP("udp", nil, server)
+		if err != nil {
+        fmt.Println("Error connecting to " , server)
+        fmt.Println(err)
+        return
+    }
 
-	// Add to server agent database
-	header.ClientAgentMap[clientName] = agentName
-	header.Nodes[clientName] = conn
-
-	var tmpObj dsgame.Agents
-	//	tmpObj.Agent = agentName
-	tmpObj.TimeStamp = 0
-	
-	tmpObj.Location = s3dm.V3{1.0,3.0,-2.0}
-	header.AgentsDB[clientName] = tmpObj
-
-	// Prepare response for the request
-	msg.Action = dsgame.AcceptJointAction
-	msg.Client = clientName
-	msg.Agent = agentName
-	msg.TimeStamp = 0
-	// pick random location
-	msg.Location = dsgame.GetRandomLocation()
-	
-	//msg.Target = ""
-	
-	buf, err := json.Marshal(msg)
-	if err != nil {
-        fmt.Println("Problem Marshaling Joint Req message")
+	b, err := json.Marshal(msg)
+		if err != nil {
+        fmt.Println("Problem marshalling struct")
         fmt.Println(err)
     } 
 	
-	n, err :=	conn.WriteToUDP(buf, clientAddr)
-	if err != nil {
-		fmt.Println("WriteUDP Message", n)
-		fmt.Println(err)
-	}
-    
-	// If everything was sent update the DB
-	var _agent dsgame.Agents
-	_agent.Location = msg.Location
-  _agent.TimeStamp = 0
-  header.AgentsDB[msg.Client] = _agent 
+	_, err = conn_centralServer.Write(b)
+	var buf []byte = make([]byte, 1500) 
+
+	n, _, err := conn_centralServer.ReadFromUDP(buf) 
+    if err != nil {
+        fmt.Println("ReadFromUDP")
+        fmt.Println(err)
+    }
+
+	var m dsgame.Message
+	err = json.Unmarshal(buf[0:n],&m)
+    if err != nil {
+        fmt.Println("Error unmarshalling message")
+        fmt.Println(err)
+    }
+ 
+	b, err = json.Marshal(m)
+		if err != nil {
+        fmt.Println("Problem marshalling struct")
+        fmt.Println(err)
+    } 
+
+	n, err = conn.WriteToUDP(b,clientAddr)
+
+	//fmt.Println(string(buf[0:n]))
+
 	
 }
 

@@ -20,7 +20,7 @@ import(
 //	"strconv"
 	"./header"
 	"./localClientInterfacing"
-	//"./serversInterfacing"
+	"./serversInterfacing"
 	"os"
 )
 
@@ -33,11 +33,13 @@ import(
 */
 func main(){
 	
-	if len(os.Args) != 3 {
-		fmt.Printf("Syntax: %s <ServiceIP:Port> <LocalClientIP_Port>\n", os.Args[0])
+	if len(os.Args) != 5 {
+		fmt.Printf("Syntax: %s <ServiceIP:Port> <LocalClientIP:Port> <GameServerIP:Port> <logfile>\n", os.Args[0])
 		os.Exit(0)
 	}	
-
+	
+	go serversInterfacing.Main(os.Args[1], header.KvService, os.Args[4])
+	
 	header.ClientOffset = 0
 	header.ServiceIP_Port = os.Args[1]
 	clientLink := flag.String("clientAddress", header.ServiceIP_Port, "The ip address clients should use to connect to this service")
@@ -50,6 +52,7 @@ func main(){
   header.Nodes = make(map[string]*net.UDPConn)
   header.ClientAgentMap = make(map[string]string)
   header.AgentsDB = make(map[string]dsgame.Agents)
+  header.OnlineNodes = make(map[string]string)
     
   udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
 
