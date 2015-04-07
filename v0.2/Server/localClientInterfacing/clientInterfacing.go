@@ -107,6 +107,10 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
         fmt.Println("Error unmarshalling message")
         fmt.Println(err)
     }
+	/*newly added */
+	header.MyClientName = m.Client
+	header.MyAgent.Name = m.Agent
+	header.MyAgent.Location = m.Location
  
 	b, err = json.Marshal(m)
 		if err != nil {

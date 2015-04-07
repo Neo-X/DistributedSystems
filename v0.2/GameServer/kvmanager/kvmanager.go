@@ -91,7 +91,7 @@ func nodemain(ip_port string, logfile string){
 		*/
 		// (2) set up its own entry
 		mypriority = 1
-		ownEntry_val := strconv.FormatInt(mypriority, 10)+ string(":")+ strconv.FormatInt(counter,10) // add timestamp
+		ownEntry_val := strconv.FormatInt(mypriority, 10)+ string(";;;")+ strconv.FormatInt(counter,10) // add timestamp
 		var args2 PutArgs
 		args2.Key = myid
 		args2.Val = ownEntry_val
@@ -108,7 +108,7 @@ func nodemain(ip_port string, logfile string){
 		*/
 
 		// (3) set up nodes key
-		setNode_val := myid + string(":1")
+		setNode_val := myid + string(";1")
 		var args_setNodes PutArgs
 		args_setNodes.Key = "nodes"
 		args_setNodes.Val = setNode_val
@@ -151,10 +151,10 @@ func domainMaster(client *rpc.Client){
 				//check if entry is already there in nodes
 				//found := false
 				var active string
-				active = myid + string(":") + strconv.FormatInt(mypriority,10)
+				active = myid + string(";") + strconv.FormatInt(mypriority,10)
 				msgparts := strings.Split(reply_getNodes.Val,";;")	
 				for i := range msgparts {
-					keyVal := strings.Split(msgparts[i],":")	
+					keyVal := strings.Split(msgparts[i],";")	
 					// check if the node is still alive or not
 					var reply_getNodes ValReply
 					var arg_getNodes GetArgs
@@ -164,7 +164,7 @@ func domainMaster(client *rpc.Client){
 					if err != nil {
 						log.Fatal("KeyValService.Get:", err.Error())
 					}
-					strcounter := strings.Split(reply_getNodes.Val,":")
+					strcounter := strings.Split(reply_getNodes.Val,";;;")
 					counter,err := strconv.ParseInt(strcounter[1],10,64)
 					if err != nil {
 						log.Fatal("couldn't parse from string to int:", err.Error())
@@ -177,8 +177,9 @@ func domainMaster(client *rpc.Client){
 							if active != "" {
 								active = active + string(";;")
 							}
-							active = active + keyVal[0] + string(":") + keyVal[1] + string(":") + keyVal[2]
+							active = active + keyVal[0] + string(";") + keyVal[1] + string(";") + keyVal[2]
 							idtopreviousCounter[keyVal[0]] = counter
+							fmt.Println(strcounter[0])
 						} else {
 							idtopreviousCounter[keyVal[0]] = 0
 						}
@@ -191,7 +192,7 @@ func domainMaster(client *rpc.Client){
 
 				if active != "" {
 					 //update the active
-					setActive_val := active + string(";;;") + myid +string(":") +strconv.FormatInt(mypriority,10) +(":")+strconv.FormatInt(counter,10) //actually it should be active
+					setActive_val := active + string(";;;") + myid +string(";") +strconv.FormatInt(mypriority,10) +(";")+strconv.FormatInt(counter,10) //actually it should be active
 					var arg_setActive PutArgs
 					arg_setActive.Key = "active"
 					arg_setActive.Val = setActive_val

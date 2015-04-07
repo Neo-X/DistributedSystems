@@ -13,6 +13,7 @@ import (
 	"time"
 	"strings"
 	"../header"
+	"encoding/json"
 )
 
 // args in get(args)
@@ -124,13 +125,25 @@ func regularNode(client * rpc.Client) {
 			case <- tickChannel_updatetable:
 				// (2) set up its own entry
 				counter++
-				ownEntry_val := strconv.FormatInt(mypriority,10) + string(":") + strconv.FormatInt(counter, 10)  // add timestamp
+				//ownEntry_val := strconv.FormatInt(mypriority,10) + string(";") + strconv.FormatInt(counter, 10)  // add timestamp
+				
+				var d header.AgentDB
+				d.Client = header.MyClientName
+				d.Agent.Name = header.MyAgent.Name
+				d.Agent.Location = header.MyAgent.Location
+				b,err := json.Marshal(d)
+					if err!= nil {
+						fmt.Println("Problem marshalling struct")
+						fmt.Println(err)
+					}
+				ownEntry_val := string(b) + string(";;;") + strconv.FormatInt(counter, 10)  // add timestamp
+
 				var args2 PutArgs
 				args2.Key = myid
 				args2.Val = ownEntry_val
 				args2.VStamp = logger.PrepareSend("put:"+ ownEntry_val, nil)
 				var reply_ownEntry ValReply
-				err := client.Call("KeyValService.Put",&args2, &reply_ownEntry)
+				err = client.Call("KeyValService.Put",&args2, &reply_ownEntry)
 				if err != nil {
 					log.Fatal("KeyValService.Put:", err.Error())
 				}
@@ -155,7 +168,7 @@ func regularNode(client * rpc.Client) {
 				found := false
 				msgparts := strings.Split(reply_getNodes.Val,";;")	
 				for i := range msgparts {
-					keyVal := strings.Split(msgparts[i],":")	
+					keyVal := strings.Split(msgparts[i],";")	
 					if keyVal[0] == myid  {
 						found = true
 						val,err := strconv.ParseInt(keyVal[1],10,64)
@@ -167,14 +180,14 @@ func regularNode(client * rpc.Client) {
 								nodes = nodes + string(";;")
 							}
 							fmt.Printf("->KeyCount %d\n", keyCount)
-							nodes = nodes + keyVal[0] +string(":")+ strconv.FormatInt(mypriority,10) + string(":") + strconv.FormatInt(keyCount,10)
+							nodes = nodes + keyVal[0] +string(";")+ strconv.FormatInt(mypriority,10) + string(";") + strconv.FormatInt(keyCount,10)
 							
 						} else {
 							if nodes != "" {
 								nodes = nodes + string(";;")
 							}
 							//nodes = nodes + msgparts[i]
-							nodes = nodes + keyVal[0] +string(":")+ strconv.FormatInt(mypriority,10) + string(":") + strconv.FormatInt(keyCount,10)
+							nodes = nodes + keyVal[0] +string(";")+ strconv.FormatInt(mypriority,10) + string(";") + strconv.FormatInt(keyCount,10)
 						}
 					}else {
 						if nodes != "" {
@@ -187,7 +200,7 @@ func regularNode(client * rpc.Client) {
 				if found == false {
 					// (4) put its node in nodes
 				fmt.Printf("-->KeyCount %d\n", keyCount)
-					setNodes_val = reply_getNodes.Val + string(";;") + myid + string(":") + strconv.FormatInt(mypriority,10) + string(":")+ strconv.FormatInt(keyCount,10)
+					setNodes_val = reply_getNodes.Val + string(";;") + myid + string(";") + strconv.FormatInt(mypriority,10) + string(";")+ strconv.FormatInt(keyCount,10)
 				} else {
 					setNodes_val = nodes
 				}
@@ -224,7 +237,7 @@ func regularNode(client * rpc.Client) {
 					if i == 0 { 
 						continue 
 					}else{
-						part := strings.Split(activeNodes[i], ":")
+						part := strings.Split(activeNodes[i], ";")
 						port := part[0]
 						t := time.Now().Local()
 						header.OnlineNodes[port] = t.Format("20060102150405")
@@ -239,7 +252,7 @@ func regularNode(client * rpc.Client) {
 
 				if masterCounter == 0 {
 					msgpart := strings.Split(reply_getActive.Val, ";;;")
-					masterdetail := strings.Split(msgpart[1], ":")
+					masterdetail := strings.Split(msgpart[1], ";")
 					masterCounter,err = strconv.ParseInt(masterdetail[2],10,64)
 					masterpriority, err = strconv.ParseInt(masterdetail[1],10,64)
 					if err != nil {
@@ -247,7 +260,7 @@ func regularNode(client * rpc.Client) {
 					}
 				}else {
 					msgpart := strings.Split(reply_getActive.Val, ";;;")
-					masterdetail := strings.Split(msgpart[1], ":")
+					masterdetail := strings.Split(msgpart[1], ";")
 					masterpriority, err = strconv.ParseInt(masterdetail[1],10,64)
 					mCounter,err := strconv.ParseInt(masterdetail[2],10,64)
 					if err != nil {
@@ -284,11 +297,11 @@ func Main(ip_port, ip_port_frontend, logfile string) {
 		os.Exit(1)
 	}
 	*/
-	parts:= strings.Split(ip_port,":")
-	port = parts[1]
+	//parts:= strings.Split(ip_port,":")
+	//port = parts[1]
 	
 	/// use port as my id
-	myid = port
+	myid = ip_port
 
 
  	nodemain(ip_port_frontend  , logfile)
