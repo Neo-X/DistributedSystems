@@ -233,21 +233,32 @@ func regularNode(client * rpc.Client) {
 
 				msgpart := strings.Split(reply_getActive.Val, ";;;")
 				activeNodes := strings.Split(msgpart[0], ";;")
+				t := time.Now().Local()
+				currentTime := t.Format("20060102150405")
 				for i := range activeNodes {
 					if i == 0 { 
 						continue 
 					}else{
 						part := strings.Split(activeNodes[i], ";")
 						port := part[0]
-						t := time.Now().Local()
-						header.OnlineNodes[port] = t.Format("20060102150405")
+						if header.OnlineNodes[port] == ""{ // New Node came up
+							if port != header.ServiceIP_Port {
+								sendState(port)
+							}
+						}
+						header.OnlineNodes[port] = currentTime //t.Format("20060102150405")
 					}
 				}	
 								
 				// print all online nodes
 				fmt.Println("header.OnlineNodes: ")
 				for k := range header.OnlineNodes {
-					fmt.Println(k+ ":" + header.OnlineNodes[k])
+					if currentTime != header.OnlineNodes[k] { 
+						header.OnlineNodes[k] = ""
+						fmt.Println(k + ":" + header.OnlineNodes[k] + "\t\t\t" + "Offline")
+					}else {
+						fmt.Println( k + ":" + header.OnlineNodes[k] + "\t" +"Online")
+					}
 				}
 
 				if masterCounter == 0 {
@@ -283,7 +294,9 @@ func regularNode(client * rpc.Client) {
 }
 
 
-
+func sendState(port string) {
+	fmt.Println("Send State to Newly added Node: "+ port)
+}
 
 
 
