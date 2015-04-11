@@ -25,9 +25,14 @@ var ServiceIP_Port string = "127.0.0.1:5000"
 var CentralServerIP_Port string = "127.0.0.1:10000"
 const KvService string = "127.0.0.1:12345"
 
+
+/* Intermidiate state databases */
+
 var OnlineNodes map[string]string // contains all online nodes
 
 type AgentDB struct {
 	Client string
 	Agent dsgame.Agent
 }
+
+var IpToAgentDB map[string]AgentDB  // [IP:Port -- >  AgentDB]

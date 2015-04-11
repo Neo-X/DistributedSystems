@@ -126,7 +126,6 @@ func regularNode(client * rpc.Client) {
 				// (2) set up its own entry
 				counter++
 				//ownEntry_val := strconv.FormatInt(mypriority,10) + string(";") + strconv.FormatInt(counter, 10)  // add timestamp
-				
 				var d header.AgentDB
 				d.Client = header.MyClientName
 				d.Agent.Name = header.MyAgent.Name
@@ -247,6 +246,7 @@ func regularNode(client * rpc.Client) {
 							}
 						}
 						header.OnlineNodes[port] = currentTime //t.Format("20060102150405")
+						updateClientAgentMap(client, port)
 					}
 				}	
 								
@@ -255,9 +255,9 @@ func regularNode(client * rpc.Client) {
 				for k := range header.OnlineNodes {
 					if currentTime != header.OnlineNodes[k] { 
 						header.OnlineNodes[k] = ""
-						fmt.Println(k + ":" + header.OnlineNodes[k] + "\t\t\t" + "Offline")
+						fmt.Println("Offline" + "\t"+ k + "\t" + header.OnlineNodes[k])
 					}else {
-						fmt.Println( k + ":" + header.OnlineNodes[k] + "\t" +"Online")
+						fmt.Println("Online" + "\t" + k + "\t" + header.OnlineNodes[k] +"\t" + header.IpToAgentDB[k].Client + "\t" +header.IpToAgentDB[k].Agent.Name )
 					}
 				}
 
@@ -293,6 +293,33 @@ func regularNode(client * rpc.Client) {
 	}
 }
 
+func updateClientAgentMap(client *rpc.Client, port string) {
+			var reply_getDetail ValReply
+			var arg_getDetail GetArgs
+			arg_getDetail.Key = port
+			arg_getDetail.VStamp = logger.PrepareSend("get:port details", nil)
+			err := client.Call("KeyValService.Get",&arg_getDetail, &reply_getDetail)
+				if err != nil {
+					log.Fatal("KeyValService.Get:", err.Error())
+				}
+			if reply_getDetail.Val != "" {
+				reply := reply_getDetail.Val
+				var buf []byte = make([]byte,1500)
+				ownVal := strings.Split(reply, ";;;")
+				buf = []byte(ownVal[0])	
+				//copy(buf[:],ownVal)
+				var d header.AgentDB
+				err = json.Unmarshal(buf[0:], &d)
+					if err != nil {
+						fmt.Println("Error Unmarshalling message")
+						fmt.Println(err)
+					}
+				header.IpToAgentDB[port] = d
+				
+				header.ClientAgentMap[d.Client] = d.Agent.Name
+//				header.Nodes[d.Client] = 
+			}
+}
 
 func sendState(port string) {
 	fmt.Println("Send State to Newly added Node: "+ port)

@@ -53,6 +53,7 @@ func main(){
   header.ClientAgentMap = make(map[string]string)
   header.AgentsDB = make(map[string]dsgame.Agents)
   header.OnlineNodes = make(map[string]string)
+  header.IpToAgentDB = make(map[string]header.AgentDB)
     
   udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
 
