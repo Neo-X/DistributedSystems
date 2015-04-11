@@ -24,6 +24,7 @@ const JoinAction string = "Join"
 const FireAction string = "Fire"
 const DestroyAction string = "Destroy"
 const AcceptJointAction string = "AcceptJoin"
+const ReqGameStateAction string = "ReqGameState"
 
 const FireDistance float64 = 7.0
 const AgentRadius float64 = 0.5

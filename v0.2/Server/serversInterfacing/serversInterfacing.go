@@ -322,7 +322,36 @@ func updateClientAgentMap(client *rpc.Client, port string) {
 }
 
 func sendState(port string) {
-	fmt.Println("Send State to Newly added Node: "+ port)
+	//fmt.Println("Send State to Newly added Node: "+ port)
+/*	var msg dsgame.Message
+	msg.Action = dsgame.ReqGameStateAction
+	b,err := json.Marshal()
+		if err!= nil {
+			fmt.Println("Problem marshalling struct")
+			fmt.Println(err)
+		}
+	c,err := net.ResolveUDPAddr("udp",port)
+	conn,err := net.DailUDP("udp",nil,c)
+		if err != nil {
+			fmt.Println("Error connecting to ", conn)
+			fmt.Println(err)
+			return
+		}
+	b,err := json.marshal(header.IpToAgentDB)
+		if err != nil {
+			fmt.Println("Error marshalling")
+			fmt.Println(err)
+		}	
+	n,err := conn.Write(msg)
+	var gamestate
+	var buf []byte = make([]byte,1500)
+	n,_,err = conn.ReadFromUDP(buf)
+		if err != nil {
+			fmt.Println("Readfrom udp")
+			fmt.Println(err)
+		}
+	err = json.Unmarshal(buf[0:n],)
+*/
 }
 
 
