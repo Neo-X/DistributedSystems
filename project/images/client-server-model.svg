@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="14cm" height="10cm" viewBox="359 107 267 192" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="558.2" y="255.534" width="67.2" height="42"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="558.2" y="255.534" width="67.2" height="42"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="591.8" y="280.434">
+      <tspan x="591.8" y="280.434">Client</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="360.6" y="108.467" width="67.2" height="42"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="360.6" y="108.467" width="67.2" height="42"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="394.2" y="133.367">
+      <tspan x="394.2" y="133.367">Client</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="558.2" y="108.467" width="67.2" height="42"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="558.2" y="108.467" width="67.2" height="42"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="591.8" y="133.367">
+      <tspan x="591.8" y="133.367">Client</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="360.6" y="255.534" width="67.2" height="42"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="360.6" y="255.534" width="67.2" height="42"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="394.2" y="280.434">
+      <tspan x="394.2" y="280.434">Client</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="460.6" y="186.4" width="67.2" height="42"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="460.6" y="186.4" width="67.2" height="42"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="494.2" y="211.3">
+      <tspan x="494.2" y="211.3">Server</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="411" y1="150.467" x2="453.492" y2="190.246"/>
+    <polygon style="fill: #000000" points="458.968,195.372 448.25,192.188 453.492,190.246 455.084,184.888 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="458.968,195.372 448.25,192.188 453.492,190.246 455.084,184.888 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="411" y1="255.534" x2="452.844" y2="223.785"/>
+    <polygon style="fill: #000000" points="458.819,219.252 453.874,229.279 452.844,223.785 447.83,221.313 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="458.819,219.252 453.874,229.279 452.844,223.785 447.83,221.313 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="575" y1="255.534" x2="535.412" y2="223.97"/>
+    <polygon style="fill: #000000" points="529.548,219.294 540.484,221.619 535.412,223.97 534.25,229.438 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="529.548,219.294 540.484,221.619 535.412,223.97 534.25,229.438 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="575" y1="150.467" x2="534.741" y2="190.072"/>
+    <polygon style="fill: #000000" points="529.394,195.332 533.016,184.755 534.741,190.072 540.029,191.883 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="529.394,195.332 533.016,184.755 534.741,190.072 540.029,191.883 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="477.4" y1="186.4" x2="434.908" y2="146.62"/>
+    <polygon style="fill: #000000" points="429.432,141.495 440.15,144.679 434.908,146.62 433.316,151.979 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="429.432,141.495 440.15,144.679 434.908,146.62 433.316,151.979 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="511" y1="228.4" x2="550.588" y2="259.964"/>
+    <polygon style="fill: #000000" points="556.452,264.64 545.516,262.315 550.588,259.964 551.75,254.496 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="556.452,264.64 545.516,262.315 550.588,259.964 551.75,254.496 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="477.4" y1="228.4" x2="435.556" y2="260.149"/>
+    <polygon style="fill: #000000" points="429.581,264.682 434.526,254.655 435.556,260.149 440.57,262.621 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="429.581,264.682 434.526,254.655 435.556,260.149 440.57,262.621 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="511" y1="186.4" x2="551.259" y2="146.794"/>
+    <polygon style="fill: #000000" points="556.606,141.535 552.984,152.112 551.259,146.794 545.971,144.983 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="556.606,141.535 552.984,152.112 551.259,146.794 545.971,144.983 "/>
+  </g>
+</svg>
