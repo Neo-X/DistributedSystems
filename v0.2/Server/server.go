@@ -97,10 +97,10 @@ func main(){
     }
 	 	
     if address != nil {
-    	fmt.Println("got message from ", address, " with n = ", n)
+    	// fmt.Println("got message from ", address, " with n = ", n)
 
       if n > 0 {
-      	fmt.Println("from address", address, "got message:", string(buf[0:n]))
+      	// fmt.Println("from address", address, "got message:", string(buf[0:n]))
         ////// Everything should be good now
         handleMessage(conn , address, buf[0:n], *idPtr)
      		printState()       	

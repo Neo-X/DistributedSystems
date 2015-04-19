@@ -16,6 +16,7 @@ import(
 	"../s3dm"
 	"../fixed"
 	"math/rand"
+	"time"
 )
 
 // exported variables must start with a capital letter....
@@ -30,7 +31,11 @@ const FireDistance float64 = 7.0
 const AgentRadius float64 = 0.5
 const GameLowerBound float64 = -10.0
 const GameUpperBound float64 = 10.0
-const GameDeltaTime float64 = 0.05
+const GameMaxVelocity float64 = 1.3 // meters/second
+const GameDeltaTime float64 = 0.05 // delta time in microseconds
+
+var GameMessageDeltaTime time.Duration // delta time in microseconds
+
 
 
 const FirstQuadrant int64 = 1
@@ -53,6 +58,7 @@ type Message struct {
 type Agent struct {
 	Name string
 	Location s3dm.V3
+	Direction s3dm.V3
 }
 
 type Agents struct {
@@ -104,4 +110,28 @@ func GetRandomLocation() s3dm.V3 {
 	z := (_rand.Float64() * (GameUpperBound - GameLowerBound)) + GameLowerBound 
 	
 	return s3dm.V3{x,y,z}
+}
+
+/*
+	Return unit length random vector
+*/
+func GetRandomDirection() s3dm.V3 {
+	// _rand := rand.New(rand.NewSource(99))
+	x := (_rand.Float64() )
+	y := (_rand.Float64() )
+	z := (_rand.Float64() ) 
+	
+	return s3dm.V3{x,y,z}.Unit()
+}
+
+
+/*
+	Return unit length random vector
+*/
+func GetNextFireTime() uint64 {
+	// _rand := rand.New(rand.NewSource(99))
+	// keep it between the next second
+	 
+	
+	return uint64(_rand.Float64() * (1.0/GameDeltaTime))
 }

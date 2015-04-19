@@ -123,7 +123,7 @@ func Join( conn *net.UDPConn ){
         fmt.Println(err)
 	}
 	header.MyClientName = m.Client
-	header.MyAgent = dsgame.Agent{m.Agent, m.Location}
+	header.MyAgent = dsgame.Agent{m.Agent, m.Location, dsgame.GetRandomDirection()}
 	header.SimulationTime = m.TimeStamp
 	
 	fmt.Println("clientName: " ,  header.MyClientName)
