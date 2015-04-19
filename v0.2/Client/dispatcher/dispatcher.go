@@ -112,7 +112,7 @@ func Join( conn *net.UDPConn ){
 	n, _, err = conn.ReadFromUDP(buf) 
 	// _, _, err = conn.ReadFromUDP(buf) 
     if err != nil {
-        fmt.Println("ReadFromUDP")
+        fmt.Println("ClientReadFromUDP")
         fmt.Println(err)
     } 
 	// fmt.Println("Wrote ", n, "bytes")

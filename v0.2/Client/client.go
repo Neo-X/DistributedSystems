@@ -12,7 +12,7 @@ package main
 import(
 	"fmt"
 	"net"
-//"time"
+    "time"
 //	"encoding/json"
 //	"../dsgame"
 //"../fixed"
@@ -20,7 +20,7 @@ import(
 	"./dispatcher"	
 //	"./listener"
 	"./header"
-	"os"
+	"flag"
 )
 
 
@@ -39,16 +39,22 @@ in the background listening for notofications from the server.
 
 func main(){
 	//service := header.LocalServerIP_Port
-	if len(os.Args) != 3 {
-		fmt.Printf("Syntax: %s <LocalServerIP:Port> <ClientListeningIP:Port>\n",os.Args[0])
-		os.Exit(0)
-	}
+	timePtr := flag.Int64("time", 0, "The initial time")
+	logFilePtr := flag.String("logfile", "client0", "The log file for this node.")
+	serverLinkPtr := flag.String("serverAddress", "127.0.0.1:10000" , "The ip address clients should use to connect to this service")
+	
+	flag.Parse()
+	
+	
+	
+    fmt.Println("time:", *timePtr)
+    fmt.Println("logFile:", *logFilePtr)
+    fmt.Println("clientLink ip:port:", *serverLinkPtr)
 
-	service := os.Args[1]
-	server, err := net.ResolveUDPAddr("udp",service)
+	server, err := net.ResolveUDPAddr("udp",*serverLinkPtr)
 	conn, err := net.DialUDP("udp", nil, server)
 		if err != nil {
-        fmt.Println("Error connecting to " , service)
+        fmt.Println("Error connecting to " , *serverLinkPtr)
         fmt.Println(err)
         return
     }
@@ -91,7 +97,7 @@ func main(){
 		}	else {
 				fmt.Println("Please Retry.")
 		}
-		//time.Sleep(1 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 
 	// To update a location of an agent

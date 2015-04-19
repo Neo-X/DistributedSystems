@@ -13,43 +13,10 @@ import (
 	"time"
 //	"math"
 	"strings"
+	kvservice "./kvservice"
 )
 
-/** defines from key-value service
-*/
 
-// args in get(args)
-type GetArgs struct {
-	Key    string // key to look up
-	VStamp []byte // vstamp(nil)
-}
-
-// args in put(args)
-type PutArgs struct {
-	Key    string // key to associate value with
-	Val    string // value
-	VStamp []byte // vstamp(nil)
-}
-
-// args in testset(args)
-type TestSetArgs struct {
-	Key     string // key to test
-	TestVal string // value to test against actual value
-	NewVal  string // value to use if testval equals to actual value
-	VStamp  []byte // vstamp(nil)
-}
-
-// Reply from service for all three API calls above.
-type ValReply struct {
-	Val    string // value; depends on the call
-	VStamp []byte // vstamp(nil)
-}
-
-// Value in the key-val store.
-type MapVal struct {
-	value  string       // the underlying value representation
-	logger *govec.GoLog // GoVector instance for the *key* that this value is mapped to
-}
 
 var server *rpc.Client
 var logger *govec.GoLog
@@ -64,7 +31,7 @@ func main() {
 	timePtr := flag.Int64("time", 0, "The initial time")
 	deltaPtr := flag.Int64("d", 0, "delta time")
 	slavesFilePtr := flag.String("slavesfile", "slavesfile.txt", "The filename for the slaves file.")
-	logFilePtr := flag.String("logfile", "logfile.txt", "The log file for this node.")
+	logFilePtr := flag.String("logfile", "activityserver", "The log file for this node.")
 	ipandportPtr := flag.String("address", "127.0.0.1:9999", "The op address and port for the node.")
 	
 	flag.Parse()
@@ -79,7 +46,7 @@ func main() {
     fmt.Println("logFile:", *logFilePtr)
     fmt.Println("ip:port:", *ipandportPtr)
     
-    member(*ipandportPtr, *timePtr, *logFilePtr)
+    Member(*ipandportPtr, *timePtr, *logFilePtr)
     
 
 }
@@ -92,8 +59,8 @@ func leader( _time int64, delta int64, address string, slavesFile string, logFil
 func get(key string) string {
 	message := key// + strconv.FormatInt(init_time, 10)
 	lMessage := (logger).PrepareSend("getting value for key", []byte(message))
-	var reply ValReply	
-	args := &GetArgs{string(message), lMessage}
+	var reply kvservice.ValReply	
+	args := &kvservice.GetArgs{string(message), lMessage}
 	
 	err := server.Call("KeyValService.Get", args, &reply)
 	if err != nil {
@@ -108,8 +75,8 @@ func get(key string) string {
 func put(key string, value string) string {
 	message := key// + strconv.FormatInt(init_time, 10)
 	lMessage := (logger).PrepareSend("putting value for key", []byte(message))
-	var reply ValReply	
-	args := &PutArgs{key, value, lMessage}
+	var reply kvservice.ValReply	
+	args := &kvservice.PutArgs{key, value, lMessage}
 	
 	err := server.Call("KeyValService.Put", args, &reply)
 	if err != nil {
@@ -123,8 +90,8 @@ func put(key string, value string) string {
 
 func testSet(key string, testVal string, setVal string) string {
 	lMessage := (logger).PrepareSend("testSet value for key", []byte(key))
-	var reply ValReply	
-	args := &TestSetArgs{key, testVal, setVal, lMessage}
+	var reply kvservice.ValReply	
+	args := &kvservice.TestSetArgs{key, testVal, setVal, lMessage}
 	
 	err := server.Call("KeyValService.TestSet", args, &reply)
 	if err != nil {
@@ -218,6 +185,7 @@ func updateMember(memberID string) string {
 }
 
 var _members map[string] int64 // stores members last timestamps
+
 func updateMemberTimeMap(queue string) {
 	pairs := strings.Split(queue,  ",")
 	fmt.Println("Member Queue: " + queue)
@@ -235,7 +203,7 @@ func updateMemberTimeMap(queue string) {
 	}
 }
 
-func member(address string, _time int64, logFile string) {
+func Member(address string, _time int64, logFile string) {
 	// init_time := time.Now().UnixNano()
 	id := logFile
 	_members = make(map[string] int64)

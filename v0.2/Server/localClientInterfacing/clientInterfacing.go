@@ -78,6 +78,8 @@ func handleDestroyReq(conn *net.UDPConn, agent dsgame.Agents) {
 *	Post-cond:		Client should be registard in the game
 */
 func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Message){
+
+/*
 	server, err := net.ResolveUDPAddr("udp",header.CentralServerIP_Port)
 	conn_centralServer, err := net.DialUDP("udp", nil, server)
 		if err != nil {
@@ -107,18 +109,26 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
         fmt.Println("Error unmarshalling message")
         fmt.Println(err)
     }
+    */
 	/*newly added */
-	header.MyClientName = m.Client
-	header.MyAgent.Name = m.Agent
-	header.MyAgent.Location = m.Location
+	header.MyClientName = "client0"
+	header.MyAgent.Name = "agent0"
+	header.MyAgent.Location = s3dm.V3{0,0,0}
+	
+	var _msg dsgame.Message
+	_msg.Action = dsgame.AcceptJointAction
+	_msg.Client = header.MyClientName
+	_msg.Agent = header.MyAgent.Name
+	_msg.Location = header.MyAgent.Location
+	
  
-	b, err = json.Marshal(m)
+	b, err := json.Marshal(_msg)
 		if err != nil {
         fmt.Println("Problem marshalling struct")
         fmt.Println(err)
     } 
 
-	n, err = conn.WriteToUDP(b,clientAddr)
+	_, err = conn.WriteToUDP(b,clientAddr)
 
 	//fmt.Println(string(buf[0:n]))
 

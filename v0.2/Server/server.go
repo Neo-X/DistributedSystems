@@ -20,8 +20,9 @@ import(
 //	"strconv"
 	"./header"
 	"./localClientInterfacing"
-	"./serversInterfacing"
-	"os"
+	// "./serversInterfacing"
+	activityserver "../activityserver"
+	// "os"
 )
 
 
@@ -33,21 +34,28 @@ import(
 */
 func main(){
 	
-	if len(os.Args) != 5 {
-		fmt.Printf("Syntax: %s <ServiceIP:Port> <LocalClientIP:Port> <GameServerIP:Port> <logfile>\n", os.Args[0])
-		os.Exit(0)
-	}	
 	
-	go serversInterfacing.Main(os.Args[1], header.KvService, os.Args[4])
+	timePtr := flag.Int64("time", 0, "The initial time")
+	slavesFilePtr := flag.String("slavesfile", "slavesfile.txt", "The filename for the slaves file.")
+	logFilePtr := flag.String("logfile", "server0", "The log file for this node.")
+	ipandportPtr := flag.String("kvservice", "127.0.0.1:9999", "The ip address and port for the kvservice.")
+	clientLinkPtr := flag.String("clientAddress", "127.0.0.1:10000" , "The ip address clients should use to connect to this service")
 	
-	header.ClientOffset = 0
-	header.ServiceIP_Port = os.Args[1]
-	clientLink := flag.String("clientAddress", header.ServiceIP_Port, "The ip address clients should use to connect to this service")
-	logFilePtr := flag.String("logfile", "GameServer", "The log file for the GameServer.")
 	flag.Parse()
 	
-	fmt.Println("clientLink:", *clientLink)
-  fmt.Println("logFile:", *logFilePtr)
+	
+	
+    fmt.Println("time:", *timePtr)
+    fmt.Println("slavesFile:", *slavesFilePtr)
+    fmt.Println("logFile:", *logFilePtr)
+    fmt.Println("kvservice ip:port:", *ipandportPtr)
+    fmt.Println("clientLink ip:port:", *clientLinkPtr)
+    
+    go activityserver.Member(*ipandportPtr, *timePtr, *logFilePtr)	
+	
+	// go serversInterfacing.Main(os.Args[1], header.KvService, os.Args[4])
+	
+	
     
   header.Nodes = make(map[string]*net.UDPConn)
   header.ClientAgentMap = make(map[string]string)
@@ -55,10 +63,10 @@ func main(){
   header.OnlineNodes = make(map[string]string)
   header.IpToAgentDB = make(map[string]header.AgentDB)
     
-  udpAddress, err := net.ResolveUDPAddr("udp4",*clientLink)
+  udpAddress, err := net.ResolveUDPAddr("udp4",*clientLinkPtr)
 
   if err != nil {
-		fmt.Println("error resolving UDP address on ", *clientLink)
+		fmt.Println("error resolving UDP address on ", *clientLinkPtr)
 		fmt.Println(err)
 		return
   }
@@ -66,7 +74,7 @@ func main(){
   conn ,err := net.ListenUDP("udp",udpAddress)
 
 	if err != nil {
-		fmt.Println("error listening on UDP port ", *clientLink)
+		fmt.Println("error listening on UDP port ", *clientLinkPtr)
 		fmt.Println(err)
 		return
 	}
@@ -88,7 +96,7 @@ func main(){
     	fmt.Println("got message from ", address, " with n = ", n)
 
       if n > 0 {
-      	fmt.Println("from address", address, "got message:", string(buf[0:n]), n)
+      	fmt.Println("from address", address, "got message:", string(buf[0:n]))
         ////// Everything should be good now
         handleMessage(conn , address, buf[0:n])
      		printState()       	

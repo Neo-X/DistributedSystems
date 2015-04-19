@@ -20,7 +20,7 @@
 package main
 
 import (
-	"../govec"
+	"../../govec"
 	"fmt"
 	"log"
 	"math/rand"
