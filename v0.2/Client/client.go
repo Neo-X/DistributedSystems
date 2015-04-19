@@ -12,7 +12,7 @@ package main
 import(
 	"fmt"
 	"net"
-    "time"
+    // "time"
 //	"encoding/json"
 //	"../dsgame"
 //"../fixed"
@@ -97,7 +97,7 @@ func main(){
 		}	else {
 				fmt.Println("Please Retry.")
 		}
-		time.Sleep(1 * time.Second)
+		// time.Sleep(1 * time.Second)
 	}
 
 	// To update a location of an agent
