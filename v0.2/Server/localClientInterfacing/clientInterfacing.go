@@ -11,6 +11,7 @@ import(
 	// "sync"
 	"strconv"
 	"../header"
+	
 )
 
 
@@ -77,7 +78,7 @@ func handleDestroyReq(conn *net.UDPConn, agent dsgame.Agents) {
 *	Pre-cond:		takes connection argument ....
 *	Post-cond:		Client should be registard in the game
 */
-func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Message){
+func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Message, id uint64){
 
 /*
 	server, err := net.ResolveUDPAddr("udp",header.CentralServerIP_Port)
@@ -111,9 +112,9 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
     }
     */
 	/*newly added */
-	header.MyClientName = "client0"
-	header.MyAgent.Name = "agent0"
-	header.MyAgent.Location = s3dm.V3{0,0,0}
+	header.MyClientName = "client" + strconv.FormatUint(id, 10)
+	header.MyAgent.Name = "agent"  + strconv.FormatUint(id, 10)
+	header.MyAgent.Location = dsgame.GetRandomLocation()
 	
 	var _msg dsgame.Message
 	_msg.Action = dsgame.AcceptJointAction

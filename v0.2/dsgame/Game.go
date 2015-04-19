@@ -29,7 +29,9 @@ const ReqGameStateAction string = "ReqGameState"
 const FireDistance float64 = 7.0
 const AgentRadius float64 = 0.5
 const GameLowerBound float64 = -10.0
-const GameUpperBound float64 = 10.0 
+const GameUpperBound float64 = 10.0
+const GameDeltaTime float64 = 0.05
+
 
 const FirstQuadrant int64 = 1
 const SecondQuadrant int64 = 2

@@ -108,6 +108,8 @@ var membersKey = "members"
 var newMembersKey = "memberUpdateQueue"
 var memDelimiter = ","
 var keyValDelimiter = ":"
+var members int64
+// members = 0;
 var _timeThreshold int64
 var _leader_string string
 
@@ -172,6 +174,19 @@ func isLeader(id string) bool {
 }
 
 func updateMember(memberID string) string {
+	newMembers := get(newMembersKey)
+	var appendMembers string
+	if (newMembers == "" ){
+		appendMembers = memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
+	} else {
+		appendMembers = newMembers + memDelimiter + memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
+	}
+	val := testSet(newMembersKey,newMembers, appendMembers) 
+	
+	return val
+}
+
+func GetIDNumber(memberID string) string {
 	newMembers := get(newMembersKey)
 	var appendMembers string
 	if (newMembers == "" ){

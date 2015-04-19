@@ -17,7 +17,7 @@ import(
 	// "../fixed"
 	"encoding/json"
 	// "sync"
-//	"strconv"
+	"strconv"
 	"./header"
 	"./localClientInterfacing"
 	// "./serversInterfacing"
@@ -37,7 +37,8 @@ func main(){
 	
 	timePtr := flag.Int64("time", 0, "The initial time")
 	slavesFilePtr := flag.String("slavesfile", "slavesfile.txt", "The filename for the slaves file.")
-	logFilePtr := flag.String("logfile", "server0", "The log file for this node.")
+	logFilePtr := flag.String("logfile", "server", "The log file for this node.")
+	idPtr := flag.Uint64("ID", 0, "The id for this node")
 	ipandportPtr := flag.String("kvservice", "127.0.0.1:9999", "The ip address and port for the kvservice.")
 	clientLinkPtr := flag.String("clientAddress", "127.0.0.1:10000" , "The ip address clients should use to connect to this service")
 	
@@ -48,8 +49,11 @@ func main(){
     fmt.Println("time:", *timePtr)
     fmt.Println("slavesFile:", *slavesFilePtr)
     fmt.Println("logFile:", *logFilePtr)
+    fmt.Println("ID:", *idPtr)
     fmt.Println("kvservice ip:port:", *ipandportPtr)
     fmt.Println("clientLink ip:port:", *clientLinkPtr)
+    
+    *logFilePtr = *logFilePtr + strconv.FormatUint(*idPtr, 10)
     
     go activityserver.Member(*ipandportPtr, *timePtr, *logFilePtr)	
 	
@@ -98,7 +102,7 @@ func main(){
       if n > 0 {
       	fmt.Println("from address", address, "got message:", string(buf[0:n]))
         ////// Everything should be good now
-        handleMessage(conn , address, buf[0:n])
+        handleMessage(conn , address, buf[0:n], *idPtr)
      		printState()       	
       }
 
@@ -126,7 +130,7 @@ func main(){
 *	Pre-cond:		takes connection argument ....
 *	Post-cond:		Client should be registard in the game
 */
-func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte){
+func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte, id uint64){
 	var msg dsgame.Message
 	err := json.Unmarshal(buf, &msg)
 	if err != nil {
@@ -136,7 +140,7 @@ func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte){
 	}
 	
 	if msg.Action == dsgame.JoinAction {
-		localClientInterfacing.ServiceJoinReq(conn, clientAddr, msg)
+		localClientInterfacing.ServiceJoinReq(conn, clientAddr, msg, id)
 	}else if msg.Action == dsgame.UpdateLocationAction {
 		localClientInterfacing.ServiceUpdateLocationReq(conn, msg)
 	}else if msg.Action == dsgame.FireAction {
