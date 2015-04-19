@@ -1,0 +1,32 @@
+
+How the kvservice was run
+clear; clear; ./kvservicemain 127.0.0.1:9999 0
+
+How I ran the nodes in my system
+./assignment3 -address=127.0.0.1:9999 -logfile=member1
+./assignment3 -address=127.0.0.1:9999 -logfile=member2
+./assignment3 -address=127.0.0.1:9999 -logfile=member3
+
+My system uses three keys in total
+	"leader" the id and timestamp of the current leader
+		- When the timestamp is detected as stale a new leader is elected
+	"members" A list of active members in the system
+		- the Leader has exclusive write access to this
+		- The list is of the form id,id,id,...,id
+	"memberUpdateQueue"
+		- All nodes append themselves to this list at specific time intervals
+		- list is of the format id:timestamp,id:timestamp
+A Node:
+	- adds itself to the memberUpdateQueue every step and checks to make sure the leader is not stale
+	- A node keeps track of leaders staleness by checking the last value of the leader against the current
+	- If the leader is stale a new leader is elected
+
+The Leader
+	- Checks to make sure itself is the leader
+	- updates the current leader timestamp in the kvservice
+	- fetches the data from the "memberUpdateQueue" (empties the queue)
+	- updates its internal data on the last time a message was received from each member
+	- Updates the "members" listing in the keyvalueservice to reflect active members
+
+	
+Note: My version does not cope with key unavailability. My plan was to steadily increment key values (i.e. leader0 -> leader1 -> .... leaderN) with nodes carrying over data when keys go unavailable. However I don't think now is a good time to start changing more code.
