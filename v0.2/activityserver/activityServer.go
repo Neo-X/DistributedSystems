@@ -18,8 +18,8 @@ import (
 
 
 
-var server *rpc.Client
-var logger *govec.GoLog
+var Server *rpc.Client
+var Logger *govec.GoLog
 /**
 	Its not pretty but it does the job
 
@@ -46,6 +46,14 @@ func main() {
     fmt.Println("logFile:", *logFilePtr)
     fmt.Println("ip:port:", *ipandportPtr)
     
+    Logger = govec.Initialize(*logFilePtr, *logFilePtr)
+    var err error
+	Server, err = rpc.Dial("tcp", *ipandportPtr)
+	if err != nil {
+		fmt.Println("Dial failed:", err.Error())
+		os.Exit(1)
+	}
+    
     Member(*ipandportPtr, *timePtr, *logFilePtr)
     
 
@@ -56,50 +64,50 @@ func leader( _time int64, delta int64, address string, slavesFile string, logFil
     
 }
 
-func get(key string) string {
+func Get(key string) string {
 	message := key// + strconv.FormatInt(init_time, 10)
-	lMessage := (logger).PrepareSend("getting value for key", []byte(message))
+	lMessage := (Logger).PrepareSend("getting value for key", []byte(message))
 	var reply kvservice.ValReply	
 	args := &kvservice.GetArgs{string(message), lMessage}
 	
-	err := server.Call("KeyValService.Get", args, &reply)
+	err := Server.Call("KeyValService.Get", args, &reply)
 	if err != nil {
 		fmt.Println("Error running get on kvserver:", err.Error())
 		os.Exit(1)
 	}
 	val := reply.Val
-	// fmt.Printf("Key: %s, Vstamp: %s, val: %s\n", key, logger.UnpackReceive("get(k:"+args.Key+")", reply.VStamp), val)
+	// fmt.Printf("Key: %s, Vstamp: %s, val: %s\n", key, Logger.UnpackReceive("get(k:"+args.Key+")", reply.VStamp), val)
 	return 	val
 }
 
-func put(key string, value string) string {
+func Put(key string, value string) string {
 	message := key// + strconv.FormatInt(init_time, 10)
-	lMessage := (logger).PrepareSend("putting value for key", []byte(message))
+	lMessage := (Logger).PrepareSend("putting value for key", []byte(message))
 	var reply kvservice.ValReply	
 	args := &kvservice.PutArgs{key, value, lMessage}
 	
-	err := server.Call("KeyValService.Put", args, &reply)
+	err := Server.Call("KeyValService.Put", args, &reply)
 	if err != nil {
 		fmt.Println("Error running put on kvserver:", err.Error())
 		os.Exit(1)
 	}
 	val := reply.Val
-	// fmt.Printf("Key: %s, value: %s, Vstamp: %s, val: %s\n",key , reply.Val, logger.UnpackReceive("get(k:"+args.Key+")", reply.VStamp), val)
+	// fmt.Printf("Key: %s, value: %s, Vstamp: %s, val: %s\n",key , reply.Val, Logger.UnpackReceive("get(k:"+args.Key+")", reply.VStamp), val)
 	return 	val
 }
 
-func testSet(key string, testVal string, setVal string) string {
-	lMessage := (logger).PrepareSend("testSet value for key", []byte(key))
+func TestSet(key string, testVal string, setVal string) string {
+	lMessage := (Logger).PrepareSend("testSet value for key", []byte(key))
 	var reply kvservice.ValReply	
 	args := &kvservice.TestSetArgs{key, testVal, setVal, lMessage}
 	
-	err := server.Call("KeyValService.TestSet", args, &reply)
+	err := Server.Call("KeyValService.TestSet", args, &reply)
 	if err != nil {
 		fmt.Println("Error running testSet on kvserver:", err.Error())
 		os.Exit(1)
 	}
 	val := reply.Val
-	// fmt.Printf("Key: %s, value: %s, Vstamp: %s, val: %s\n",key , reply.Val, logger.UnpackReceive("get(k:"+args.Key+")", reply.VStamp), val)
+	// fmt.Printf("Key: %s, value: %s, Vstamp: %s, val: %s\n",key , reply.Val, Logger.UnpackReceive("get(k:"+args.Key+")", reply.VStamp), val)
 	return 	val
 }
 
@@ -114,11 +122,11 @@ var _timeThreshold int64
 var _leader_string string
 
 func getLeader() string {
-	return get(leaderKey)
+	return Get(leaderKey)
 }
 
 func setLeader(leader string, oldLeader string) string {
-	return testSet(leaderKey, oldLeader, leader)
+	return TestSet(leaderKey, oldLeader, leader)
 }
 
 
@@ -133,16 +141,16 @@ func postMembers() { // post list of actime members
     		activeMembers = activeMembers + memDelimiter + key
     	}
 	}
-	put(membersKey, activeMembers)
+	Put(membersKey, activeMembers)
 }
 
 func getMembers() string {
-	return get(membersKey)
+	return Get(membersKey)
 }
 
 func getNewMemberQueue() string { // gets and clears member queue
-	newMembers := get(newMembersKey)
-	testSet(newMembersKey, newMembers, "")
+	newMembers := Get(newMembersKey)
+	TestSet(newMembersKey, newMembers, "")
 	return newMembers
 }
 
@@ -174,27 +182,27 @@ func isLeader(id string) bool {
 }
 
 func updateMember(memberID string) string {
-	newMembers := get(newMembersKey)
+	newMembers := Get(newMembersKey)
 	var appendMembers string
 	if (newMembers == "" ){
 		appendMembers = memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
 	} else {
 		appendMembers = newMembers + memDelimiter + memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
 	}
-	val := testSet(newMembersKey,newMembers, appendMembers) 
+	val := TestSet(newMembersKey,newMembers, appendMembers) 
 	
 	return val
 }
 
 func GetIDNumber(memberID string) string {
-	newMembers := get(newMembersKey)
+	newMembers := Get(newMembersKey)
 	var appendMembers string
 	if (newMembers == "" ){
 		appendMembers = memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
 	} else {
 		appendMembers = newMembers + memDelimiter + memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
 	}
-	val := testSet(newMembersKey,newMembers, appendMembers) 
+	val := TestSet(newMembersKey,newMembers, appendMembers) 
 	
 	return val
 }
@@ -223,14 +231,6 @@ func Member(address string, _time int64, logFile string) {
 	id := logFile
 	_members = make(map[string] int64)
 	
-	
-	logger = govec.Initialize(logFile, logFile)
-	var err error
-	server, err = rpc.Dial("tcp", address)
-	if err != nil {
-		fmt.Println("Dial failed:", err.Error())
-		os.Exit(1)
-	}
 	/**
 	val := get("hello")
 	strconv.FormatInt(init_time, 10)
@@ -274,10 +274,10 @@ func Member(address string, _time int64, logFile string) {
     	
 		fmt.Println("\n Leader: ", leader)
 		fmt.Println("active Members: ", getMembers())
-		fmt.Println("MembersUpdateQueue: ", get(newMembersKey))
+		fmt.Println("MembersUpdateQueue: ", Get(newMembersKey))
 	}
 	
-	server.Close()
+	Server.Close()
 
 
 }

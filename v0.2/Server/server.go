@@ -12,6 +12,8 @@ import(
 	"fmt"
 	"flag"
 	"net"
+	"net/rpc"
+	"os"
 	"../dsgame"
 //	"../s3dm"
 	// "../fixed"
@@ -23,6 +25,7 @@ import(
 	// "./serversInterfacing"
 	activityserver "../activityserver"
 	// "os"
+	"../govec"
 )
 
 
@@ -54,8 +57,18 @@ func main(){
     fmt.Println("clientLink ip:port:", *clientLinkPtr)
     
     *logFilePtr = *logFilePtr + strconv.FormatUint(*idPtr, 10)
-    
-    go activityserver.Member(*ipandportPtr, *timePtr, *logFilePtr)	
+    logger := govec.Initialize(*logFilePtr, *logFilePtr)
+    // var err error
+	server, err := rpc.Dial("tcp", *ipandportPtr)
+	if err != nil {
+		fmt.Println("Dial failed:", err.Error())
+		os.Exit(1)
+	}
+	activityserver.Server = server
+	activityserver.Logger = logger
+	
+    go activityserver.Member(*ipandportPtr, *timePtr, *logFilePtr)
+    activityserver.Put(*logFilePtr, *clientLinkPtr)	
 	
 	// go serversInterfacing.Main(os.Args[1], header.KvService, os.Args[4])
 	
