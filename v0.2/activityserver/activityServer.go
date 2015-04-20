@@ -114,6 +114,7 @@ func TestSet(key string, testVal string, setVal string) string {
 var leaderKey = "leader"
 var membersKey = "members"
 var newMembersKey = "memberUpdateQueue"
+const ActivityServerKey = "activityserver"
 var memDelimiter = ","
 var keyValDelimiter = ":"
 var members int64
@@ -138,13 +139,13 @@ func postMembers() { // post list of actime members
 	for key, value := range _members {
     	fmt.Println("Key:", key, "Value:", value)
     	if ( (_timeNow - value) < _timeThreshold ) { // Last update less than threshold
-    		activeMembers = activeMembers + memDelimiter + key
+    		activeMembers = activeMembers + key + memDelimiter 
     	}
 	}
-	Put(membersKey, activeMembers)
+	Put(membersKey, activeMembers[:len(activeMembers)-1])
 }
 
-func getMembers() string {
+func GetMembers() string {
 	return Get(membersKey)
 }
 
@@ -265,6 +266,7 @@ func Member(address string, _time int64, logFile string) {
     		time.Sleep(1 * time.Second)
     	} else { // I am member
     		// update newMembers with timestamp
+    		// updateMember(id)
     		if ( !checkLeaderActive(leader) ) {
     			_timeNow := strconv.FormatInt(time.Now().UnixNano(), 10)
     			setLeader(id+keyValDelimiter+_timeNow, leader)
@@ -273,7 +275,7 @@ func Member(address string, _time int64, logFile string) {
     	}
     	
 		fmt.Println("\n Leader: ", leader)
-		fmt.Println("active Members: ", getMembers())
+		fmt.Println("active Members: ", GetMembers())
 		fmt.Println("MembersUpdateQueue: ", Get(newMembersKey))
 	}
 	

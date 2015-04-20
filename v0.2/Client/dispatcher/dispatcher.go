@@ -36,7 +36,7 @@ func UpdateServerFrame(conn *net.UDPConn){
 func sendUpdateLocation(conn *net.UDPConn) {
 		var _dir s3dm.V3
 		//_ray_ray.Origin = s3dm.Position{fixed.New(0.0),fixed.New(0.0),fixed.New(0.0)}
-		//fmt.Println("Sending location update to: ", header.MyAgent.Location)
+		// fmt.Println("Sending location update to: ", header.MyAgent.Location)
 		m := dsgame.Message{dsgame.UpdateLocationAction, header.MyClientName, header.MyAgent.Name, header.SimulationTime, header.MyAgent.Location,_dir}
 		b, err := json.Marshal(m)
 		if err != nil {
@@ -123,7 +123,7 @@ func Join( conn *net.UDPConn ){
         fmt.Println(err)
 	}
 	header.MyClientName = m.Client
-	header.MyAgent = dsgame.Agent{m.Agent, m.Location, dsgame.GetRandomDirection()}
+	header.MyAgent = dsgame.Agent{m.Agent, m.Location, 0, dsgame.GetRandomDirection()}
 	header.SimulationTime = m.TimeStamp
 	
 	fmt.Println("clientName: " ,  header.MyClientName)

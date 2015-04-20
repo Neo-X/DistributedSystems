@@ -58,6 +58,7 @@ type Message struct {
 type Agent struct {
 	Name string
 	Location s3dm.V3
+	TimeStamp int64
 	Direction s3dm.V3
 }
 

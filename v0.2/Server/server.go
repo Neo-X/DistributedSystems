@@ -11,6 +11,7 @@ package main
 import(
 	"fmt"
 	"flag"
+	"time"
 	"net"
 	"net/rpc"
 	"os"
@@ -26,9 +27,11 @@ import(
 	activityserver "../activityserver"
 	// "os"
 	"../govec"
+	"strings"
 )
 
 
+var ServerID string
 /***
 *	Function Name: 	main()
 *	Desc:			The main function for server
@@ -57,6 +60,7 @@ func main(){
     fmt.Println("clientLink ip:port:", *clientLinkPtr)
     
     *logFilePtr = *logFilePtr + strconv.FormatUint(*idPtr, 10)
+    ServerID = *logFilePtr
     logger := govec.Initialize(*logFilePtr, *logFilePtr)
     // var err error
 	server, err := rpc.Dial("tcp", *ipandportPtr)
@@ -68,7 +72,8 @@ func main(){
 	activityserver.Logger = logger
 	
     go activityserver.Member(*ipandportPtr, *timePtr, *logFilePtr)
-    activityserver.Put(*logFilePtr, *clientLinkPtr)	
+    activityserver.Put(*logFilePtr, *clientLinkPtr)
+    go CheckForNewNodes()	
 	
 	// go serversInterfacing.Main(os.Args[1], header.KvService, os.Args[4])
 	
@@ -76,9 +81,9 @@ func main(){
     
   header.Nodes = make(map[string]*net.UDPConn)
   header.ClientAgentMap = make(map[string]string)
-  header.AgentsDB = make(map[string]dsgame.Agents)
+  header.AgentDB = make(map[string]dsgame.Agent)
   header.OnlineNodes = make(map[string]string)
-  header.IpToAgentDB = make(map[string]header.AgentDB)
+  header.IpToAgentDB = make(map[string]header.AgentDB_)
     
   udpAddress, err := net.ResolveUDPAddr("udp4",*clientLinkPtr)
 
@@ -137,6 +142,57 @@ func main(){
 
 }
 
+/*
+	This is the function used for the node to poll for updated nodes. 
+	If a new node is found it is added to the header.Nodes.
+	If a node in header.Nodes does not appear in the active node, remove it from header.Nodes.
+*/
+func CheckForNewNodes() {
+	
+	for {
+		
+		activeMembers := activityserver.GetMembers()
+		// fmt.Println("active members", activeMembers)
+		if (activeMembers != "" ) { // THere should be other active members
+			members := strings.Split(activeMembers,  ",")
+			// add any new members
+			for i := 0; i < len(members); i++ {
+				if (members[i] == activityserver.ActivityServerKey) { // skip activity server
+					continue
+				}
+				if _, ok := header.Nodes[members[i]]; ok {
+				    // do nothing if it already exsists
+				} else {
+					// need to create the node and add it to header.Nodes
+					address := activityserver.Get(members[i])
+					if address == "" {
+				        fmt.Println("Error getting address for node" , members[i])
+				        // fmt.Println(err)
+				        return
+				    }
+					
+					server, err := net.ResolveUDPAddr("udp",address)
+					conn, err := net.DialUDP("udp", nil, server)
+					if err != nil {
+				        fmt.Println("Error connecting to " , address)
+				        fmt.Println(err)
+				        return
+				    }
+					header.Nodes[members[i]] = conn 
+					
+					
+				}
+					
+			}
+			
+		}
+		time.Sleep(1*time.Second)
+		// printState()	
+	}
+	
+	
+}
+
 /***
 *	Function Name: 	serviceJoinReq()
 *	Desc:			The function provide service to a client requesting to join the game
@@ -155,7 +211,12 @@ func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte, id ui
 	if msg.Action == dsgame.JoinAction {
 		localClientInterfacing.ServiceJoinReq(conn, clientAddr, msg, id)
 	}else if msg.Action == dsgame.UpdateLocationAction {
-		localClientInterfacing.ServiceUpdateLocationReq(conn, msg)
+		if ( localClientInterfacing.ServiceUpdateLocationReq(conn, msg) ) {
+			// broadcast succesful move to other nodes if Agent is this nodes agent
+			if ( msg.Agent == header.MyAgent.Name) {
+				BroadcastClientLocationUpdate(msg)
+			}
+		}
 	}else if msg.Action == dsgame.FireAction {
 		localClientInterfacing.ServiceFireReq(conn, msg)
   }else {
@@ -163,13 +224,46 @@ func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte, id ui
   }
 	
 }
+
+func BroadcastClientLocationUpdate(msg dsgame.Message) {
+	
+	for key, conn := range header.Nodes {
+		if (key != ServerID) { // don't send message to self
+			// fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )
+		
+			b, err := json.Marshal(msg)
+			if err != nil {
+		        fmt.Println("Problem marshalling struct")
+		        fmt.Println(err)
+		    } 
+			
+			_, err =	conn.Write(b)
+		    if err != nil {
+		        fmt.Println("WriteUDP")
+		        fmt.Println(err)
+		    } 
+		
+		}	
+ 	}
+	
+}
+
+
 /*
 	Print the current state of the game for this server
 */
 func printState() {
 	
 	fmt.Println("Server game state")
+	/*
 	for key, value := range header.AgentsDB {
-		fmt.Println("agent:", key, "time:", value.TimeStamp, " agent Location:", value.Location)	
+		fmt.Println("client:", key, "time:", value.TimeStamp, " agent Location:", value.Location)	
+ 	}
+ 	*/
+	for key, value := range header.AgentDB {
+		fmt.Println("agent:", key, " agent Location:", value.Location)	
+ 	}
+	for key, value := range header.Nodes {
+		fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )	
  	}
 }

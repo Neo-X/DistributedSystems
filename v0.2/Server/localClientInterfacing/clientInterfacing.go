@@ -20,18 +20,21 @@ import(
 *	Desc:			The function provide service to client's move request
 *	Pre-cond:		takes connection argument and the new location
 *	Post-cond:		list is updated with new location or return failure
+Also return failure on this being an invalid update??
 */
-func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
+func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 	// update server agent database
-	if header.Nodes[msg.Client] == conn && header.ClientAgentMap[msg.Client] == msg.Agent {
-		var tmpObj dsgame.Agents
+	// if header.Nodes[msg.Client] == conn { // && header.ClientAgentMap[msg.Client] == msg.Agent { // [Glen] Maybe use some other invarients
+		var tmpObj dsgame.Agent
 		tmpObj.TimeStamp = msg.TimeStamp
 		tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
-		header.AgentsDB[msg.Client] = tmpObj
+		header.AgentDB[msg.Agent] = tmpObj
 		fmt.Println("Location updated by:" + msg.Client)
-	} else {
-		// if something seems fishy
-	}
+		return true
+	// } else {
+		// fmt.Println("something seems fishy with the agent updates")
+	// }
+	// return false
 }
 
 
@@ -44,12 +47,12 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message){
 func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
 	fmt.Println("Firing projectile  ", msg.Target)
 	fmt.Println("From agent  ", msg.Client)
-	pos := header.AgentsDB[msg.Client].Location
+	pos := header.AgentDB[msg.Agent].Location
 	// destroy the client if valid
 	
-	for key, value := range header.AgentsDB {
+	for key, value := range header.AgentDB {
  		// fmt.Println("agent:", key, " agent Location:", value.Location)
- 	  if (key != msg.Client ) { // Ignore intersections with self
+ 	  if (key != msg.Agent ) { // Ignore intersections with self
 			if (dsgame.RayHitsAgent(value.Location, pos, msg.Target)) {
  	   		// fmt.Println("Ray hit agent", key)
  	   		handleDestroyReq(conn, value) 
@@ -65,7 +68,7 @@ func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
 *	Pre-cond:		takes connection argument and name of agent that is destoroid
 *	Post-cond:		Destroy the agent, send it a new random location
 */
-func handleDestroyReq(conn *net.UDPConn, agent dsgame.Agents) {
+func handleDestroyReq(conn *net.UDPConn, agent dsgame.Agent) {
 	
 	
 }
@@ -112,7 +115,7 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
     }
     */
 	/*newly added */
-	header.MyClientName = "client" + strconv.FormatUint(id, 10)
+	header.MyClientName = "node" + strconv.FormatUint(id, 10)
 	header.MyAgent.Name = "agent"  + strconv.FormatUint(id, 10)
 	header.MyAgent.Location = dsgame.GetRandomLocation()
 	
@@ -122,7 +125,7 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	_msg.Agent = header.MyAgent.Name
 	_msg.Location = header.MyAgent.Location
 	
- 
+	 
 	b, err := json.Marshal(_msg)
 		if err != nil {
         fmt.Println("Problem marshalling struct")
@@ -130,6 +133,15 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
     } 
 
 	_, err = conn.WriteToUDP(b,clientAddr)
+	
+	var tmpObj dsgame.Agent
+	tmpObj.TimeStamp = msg.TimeStamp
+	tmpObj.Location = _msg.Location
+	tmpObj.Name = _msg.Agent
+	header.AgentDB[_msg.Agent] = tmpObj
+	header.ClientAgentMap[_msg.Client] = _msg.Agent 
+	
+	
 
 	//fmt.Println(string(buf[0:n]))
 

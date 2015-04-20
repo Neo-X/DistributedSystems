@@ -126,7 +126,7 @@ func RunAgent(conn *net.UDPConn) {
 
 				
 		header.MyAgent.Location = header.MyAgent.Location.Add(header.MyAgent.Direction.Muls(dsgame.GameDeltaTime))
-		// fmt.Println("Agent: moving", header.MyAgent.Location)
+		fmt.Println("Agent: moving", header.MyAgent.Location)
 		if (header.MyAgent.Location.X > dsgame.GameUpperBound) || (header.MyAgent.Location.X < dsgame.GameLowerBound) {
 			header.MyAgent.Direction.X = header.MyAgent.Direction.X*-1.0 
 		}
