@@ -74,6 +74,7 @@ func main(){
 
 	go dispatcher.UpdateServerFrame(conn)
 	go RunAgent(conn)
+	go dispatcher.ListenForMessages(conn)
 
 	// simulating temporary sendUpdateLocation()	
 	for {
@@ -125,7 +126,7 @@ func RunAgent(conn *net.UDPConn) {
 	for {
 
 		header.MyAgent.TimeStamp += 1
-		header.MyAgent.Location = header.MyAgent.Location.Add(header.MyAgent.Direction.Muls(dsgame.GameDeltaTime))
+		header.MyAgent.Location = header.MyAgent.Location.Add(header.MyAgent.Direction.Muls(dsgame.GameDeltaTime*2))
 		fmt.Println("Agent: moving", header.MyAgent.Location)
 		if (header.MyAgent.Location.X > dsgame.GameUpperBound) || (header.MyAgent.Location.X < dsgame.GameLowerBound) {
 			header.MyAgent.Direction.X = header.MyAgent.Direction.X*-1.0 

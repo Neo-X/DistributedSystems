@@ -21,6 +21,7 @@ import(
 
 // exported variables must start with a capital letter....
 const UpdateLocationAction string = "UpdateLocation"
+const PositionOverrideAction string = "positionOverride"
 const JoinAction string = "Join"
 const FireAction string = "Fire"
 const DestroyAction string = "Destroy"

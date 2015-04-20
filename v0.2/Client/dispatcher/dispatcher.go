@@ -25,6 +25,49 @@ func UpdateServerFrame(conn *net.UDPConn){
   }
 }
 
+/***
+*	Function Name: 	listenForMessages
+*	Desc:			This function listens on the connection for incoming messages
+*	Pre-cond:		takes connection argument
+*	Post-cond:		Runs until the end of the game
+*/
+func ListenForMessages(conn *net.UDPConn){ 
+  for {
+    var buf []byte = make([]byte, 1500) 
+	n, _, err := conn.ReadFromUDP(buf) 
+	// _, _, err = conn.ReadFromUDP(buf) 
+    if err != nil {
+        fmt.Println("ReadFromUDP")
+        fmt.Println(err)
+    } 
+	// fmt.Println("Wrote ", n, "bytes")
+	fmt.Println(string(buf[0:n]))
+	var msg dsgame.Message
+	err = json.Unmarshal(buf[0:n], &msg)
+	if err != nil {
+		fmt.Println("Error handling message")
+		fmt.Println(err)
+		return
+	}
+	processMessage(msg)
+  }
+}
+
+/***
+*	Function Name: 	processMessage
+*	Desc:			This function will process a message
+*	Pre-cond:		takes a msg to be processed
+*	Post-cond:		Depends on the message but the message should be handled properly.
+*/
+func processMessage(msg dsgame.Message) {
+
+	if ( msg.Action == dsgame.PositionOverrideAction ) {
+		// override current agent location
+		fmt.Println("Overriding agent location")
+		header.MyAgent.Location = msg.Location
+	}
+
+}
 
 
 /***
@@ -50,6 +93,7 @@ func sendUpdateLocation(conn *net.UDPConn) {
 	        fmt.Println(err)
 	    } 
 	
+/*
 		var buf []byte = make([]byte, 1500) 
 		//n, _, err = conn.ReadFromUDP(buf) 
 		 _, _, err = conn.ReadFromUDP(buf) 
@@ -59,6 +103,7 @@ func sendUpdateLocation(conn *net.UDPConn) {
 	    } 
 		// fmt.Println("Wrote ", n, "bytes")
 		//fmt.Println(string(buf[0:n]))
+*/
 }
 
 
@@ -76,12 +121,12 @@ func Fire(conn * net.UDPConn, _dir s3dm.V3){
 	        fmt.Println(err)
 	    } 
 		
-		n, err :=	conn.Write(b)
+		_, err =	conn.Write(b)
 	    if err != nil {
 	        fmt.Println("WriteUDP")
 	        fmt.Println(err)
 	    } 
-	
+	/*
 		var buf []byte = make([]byte, 1500) 
 		n, _, err = conn.ReadFromUDP(buf) 
 		// _, _, err = conn.ReadFromUDP(buf) 
@@ -91,6 +136,7 @@ func Fire(conn * net.UDPConn, _dir s3dm.V3){
 	    } 
 		// fmt.Println("Wrote ", n, "bytes")
 		fmt.Println(string(buf[0:n]))
+*/
 }
 
 /***

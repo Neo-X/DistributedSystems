@@ -36,8 +36,10 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 
 		deltaTime := float64(clientDeltaTime)/1000000000.0
 		fmt.Println("Checking for invalid location, msgTime", _timeNow, " agent time", header.AgentDB[msg.Agent].LastUpdateTime, " delta time in seconds", deltaTime)
-		if ( distance*deltaTime > dsgame.GameMaxVelocity*deltaTime ) {
+		if ( (distance/deltaTime) > dsgame.GameMaxVelocity ) {
 			fmt.Println("Invalid location submitted by client:", msg.Client, " location", msg.Location, " deltaTime", deltaTime )
+			// need to send position override now.
+			SendPositionOverrideforAgent()
 			return false
 		} 
 	
@@ -136,6 +138,8 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	header.MyClientName = "node" + strconv.FormatUint(id, 10)
 	header.MyAgent.Name = "agent"  + strconv.FormatUint(id, 10)
 	header.MyAgent.Location = dsgame.GetRandomLocation()
+	header.ClientLink = clientAddr
+	header.Connection = conn
 	
 	var _msg dsgame.Message
 	_msg.Action = dsgame.AcceptJointAction
@@ -178,6 +182,33 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 func getNextClientID() (string,string){
 	header.ClientOffset++
 	return "client" + strconv.Itoa(header.ClientOffset), "agent" + strconv.Itoa(header.ClientOffset)
+}
+
+/***
+*	Function Name: 	getNextClientID()
+*	Desc:			Sends a message back to the client overwriting the location of the agent
+*	Pre-cond:		Don't think it needs any arguments.
+*	Post-cond:		The message should be sent and hopefully the client will update the agent location
+*/
+func SendPositionOverrideforAgent() {
+	var _msg dsgame.Message
+	_msg.Action = dsgame.PositionOverrideAction
+	_msg.Client = header.MyClientName
+	_msg.Agent = header.MyAgent.Name
+	_msg.Location = header.AgentDB[header.MyAgent.Name].Location
+	
+	 
+	b, err := json.Marshal(_msg)
+		if err != nil {
+        fmt.Println("Problem marshalling struct")
+        fmt.Println(err)
+    } 
+
+	_, err = header.Connection.WriteToUDP(b,header.ClientLink)
+	if ( err != nil ) {
+		fmt.Println("Problem sending Position override to client")
+        fmt.Println(err)
+	}
 }
 
 
