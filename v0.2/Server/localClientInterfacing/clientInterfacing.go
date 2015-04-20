@@ -11,6 +11,7 @@ import(
 	// "sync"
 	"strconv"
 	"../header"
+	"time"
 	
 )
 
@@ -24,10 +25,27 @@ Also return failure on this being an invalid update??
 */
 func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 	// update server agent database
+	_timeNow := time.Now().UnixNano()
 	// if header.Nodes[msg.Client] == conn { // && header.ClientAgentMap[msg.Client] == msg.Agent { // [Glen] Maybe use some other invarients
-		var tmpObj dsgame.Agent
+	if ( header.MyAgent.Name == msg.Agent) { // Need to validate location update
+		// (NEW location - old location).length()*deltaTime < maxVelocity*deltaTime
+		fmt.Println("Checking for invalid location")
+		distance := msg.Location.Sub(header.AgentDB[msg.Agent].Location).Length()
+		
+		clientDeltaTime := _timeNow - header.AgentDB[msg.Agent].LastUpdateTime // Timestamps should be controlled by server?
+
+		deltaTime := float64(clientDeltaTime)/1000000000.0
+		fmt.Println("Checking for invalid location, msgTime", _timeNow, " agent time", header.AgentDB[msg.Agent].LastUpdateTime, " delta time in seconds", deltaTime)
+		if ( distance*deltaTime > dsgame.GameMaxVelocity*deltaTime ) {
+			fmt.Println("Invalid location submitted by client:", msg.Client, " location", msg.Location, " deltaTime", deltaTime )
+			return false
+		} 
+	
+	}
+		var tmpObj dsgame.Agent // This covers the case when the agent has not been initialized yet, but I don't think we want this
 		tmpObj.TimeStamp = msg.TimeStamp
 		tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
+		tmpObj.LastUpdateTime = _timeNow
 		header.AgentDB[msg.Agent] = tmpObj
 		fmt.Println("Location updated by:" + msg.Client)
 		return true
@@ -136,6 +154,7 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	
 	var tmpObj dsgame.Agent
 	tmpObj.TimeStamp = msg.TimeStamp
+	tmpObj.LastUpdateTime = time.Now().UnixNano()
 	tmpObj.Location = _msg.Location
 	tmpObj.Name = _msg.Agent
 	header.AgentDB[_msg.Agent] = tmpObj
