@@ -159,9 +159,10 @@ func BroadcastDestroyMeReq(msg dsgame.Message) {
 *	Post-cond:		Destroy the agent, send it a new random location
 */
 func HandleDestroyReq(msg dsgame.Message) {
-	//TBD
 	fmt.Println(msg.Client +" is Destroyed!!!!!!")
-	
+	header.MyAgent.Location = dsgame.GetRandomDirection()
+	SendPositionOverrideforAgent()
+		
 }
 
 
