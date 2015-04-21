@@ -1,0 +1,407 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>observer for ARM</title>
+		<meta charset="utf-8">
+		<style>
+			body {
+				margin: 10px;
+				background-color: #ffffff;
+				overflow: scroll;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src="three.min.js"></script>
+		<!-- <script src="numeric.js"></script>
+		<script src="sylvester.src.js"></script>
+		<script src="Libs/stats.min.js"></script>  -->
+		<link href="examples.css" rel="stylesheet" type="text/css">
+		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="flot/excanvas.min.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
+		<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+
+		<script>
+		
+		
+			var PORT = 9995;
+			var HOST = '127.0.0.1';
+	
+			var dgram = require('dgram');
+			var server = dgram.createSocket('udp4');
+	
+			server.on('listening', function () {
+			    var address = server.address();
+			    console.log('UDP Server listening on ' + address.address + ":" + address.port);
+			});
+	
+			server.on('message', function (message, remote) {
+			    console.log(remote.address + ':' + remote.port +' - ' + message);
+	
+			});
+	
+			server.bind(PORT, HOST);
+
+			var camera, scene, renderer;
+			var frameNumber = 0;
+			var simTime = 0.0;
+			var deltaTime = 0.005;
+			var ground;
+			var velocity, angularVelocity; 
+			var pendulum, pendulum2;
+			var mass = 1.0;
+			var gravity = 10.0;
+			var theta = (Math.PI*2.0) - Math.PI/4.0;
+			var length = 1.0;
+			var b_height = 2*length, b_depth = 0.15, b_width = 0.15;
+			// var axis = Vector.create([0, 0.0, 1.0]);
+			// var position = Vector.create([0, -1.0, 0]);
+			var position = ([Math.cos(theta)*length, Math.sin(theta)*length, 0]);
+			
+			var drawAngularForce, drawGavityForce, drawVelocity, drawVelocity, drawAngularVelocity, drawAcceleration, drawAngularAcceleration;
+			var drawTorqueForce;
+			var oldAngular, omegaDot;
+			// position = position.rotate(theta, axis);
+			/*
+				The theta used to find the initial position is not the same as the one
+				use to rotate the link.
+			*/
+			theta = Math.PI/4.0;
+			// theta = 0.0;
+			// position = position / numeric.norm2(position);
+			/*
+				theta does not need to be part of the config but it makes my life easiers
+				config [x, y, theta, linear velocity, angular velocity]
+			*/
+			var configuration = [position[0], position[1], theta, 0, 0, 0, 0, 0, 0];
+			
+
+			init();
+			animate();
+
+			function init() 
+			{
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				renderer = new THREE.WebGLRenderer();
+				
+				renderer.setSize( 800, 500 );
+				document.body.appendChild( renderer.domElement );
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position.set(1,0,5);
+				camera.lookAt( new THREE.Vector3(0,-1,0) );
+
+				scene = new THREE.Scene();
+
+				var geometry = new THREE.BoxGeometry( b_width, b_height, b_depth );
+
+				var texture = THREE.ImageUtils.loadTexture( 'crate.gif' );
+				texture.anisotropy = renderer.getMaxAnisotropy();
+
+				var material = new THREE.MeshBasicMaterial( { map: texture } );
+				// var pendulum = new THREE.Object3D();
+				
+				pendulum = new THREE.Mesh( geometry, material );
+				pendulum.position.set(configuration[0], configuration[1], 0);
+				pendulum.rotation.set(0,0,configuration[2]);
+				scene.add( pendulum );
+				// mesh.position.set( 0, -100, 0 );
+
+				ground = new THREE.Mesh( new THREE.PlaneGeometry( 10, 10, 1, 1 ), material );
+				ground.position.set( 0, -4, 0 );
+				ground.rotation.x = THREE.Math.degToRad(-90);
+				scene.add( ground );
+				
+				centre = new THREE.Mesh( new THREE.SphereGeometry( 0.05, 0.05, 0.05), material );
+				centre.position.set( 0, 0, 0);
+				scene.add( centre );
+				
+				/*
+				object = new THREE.AxisHelper( 1 );
+				object.position.set( 0, 0, 0 );
+				scene.add( object );
+				*/
+				
+				drawAcceleration = new THREE.ArrowHelper( new THREE.Vector3( 0, 1, 0 ), new THREE.Vector3( 0, 0, 0 ), 1, 0x0000ff);
+				drawAcceleration.position.set( 1, 0, 0 );
+				scene.add( drawAcceleration );
+				
+				drawAngularAcceleration = new THREE.ArrowHelper( new THREE.Vector3( 0, 0, 1 ), new THREE.Vector3( 0, 0, 0 ), 1, 0x00ff00);
+				drawAngularAcceleration.position.set( 1, 0, 0 );
+				scene.add( drawAngularAcceleration );
+				
+				
+				/*
+					Draw velocities of object
+					drawVelocity, drawAngularVelocity
+				*/
+				
+				drawVelocity = new THREE.ArrowHelper( new THREE.Vector3( 0, 0, 1 ), new THREE.Vector3( 0, 0, 0 ), 1, 0x00ffff);
+				drawVelocity.position.set( 1, 0, 0 );
+				scene.add( drawVelocity );
+
+				drawAngularVelocity = new THREE.ArrowHelper( new THREE.Vector3( 0, 0, 1 ), new THREE.Vector3( 0, 0, 0 ), 1, 0xffff00);
+				drawAngularVelocity.position.set( 1, 0, 0 );
+				scene.add( drawAngularVelocity );
+				
+				
+				
+				drawTorqueForce = new THREE.ArrowHelper( new THREE.Vector3( 0, 0, 1 ), new THREE.Vector3( 0, 0, 0 ), 1, 0xff0000);
+				drawTorqueForce.position.set( 1, 0, 0 );
+				scene.add( drawTorqueForce );
+
+
+				window.addEventListener( 'resize', onWindowResize, false );
+				
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				// mesh.rotation.x += 0.005;
+				// mesh.rotation.y += 0.001;
+				
+				render(deltaTime, frameNumber, simTime);
+				frameNumber = frameNumber+1;
+				simTime = simTime + deltaTime;
+				stats.update();
+
+			}
+			
+			function animatePendulum( dt )
+			{
+				
+			}
+
+			
+			function render( dt, _frameNumber, _simTime ) {
+
+
+				// camera.position.x = Math.cos( timer ) * 800;
+				// camera.position.z = Math.sin( timer ) * 800;
+
+				// camera.lookAt( scene.position );
+
+				for ( var i = 0, l = scene.children.length; i < l; i ++ ) 
+				{
+
+					var object = scene.children[ i ];
+					// object.rotation.x = timer * 5;
+					// object.rotation.y = timer * 2.5;
+
+				}
+				updateState(configuration);
+				// printData();
+				
+				renderer.render( scene, camera );
+
+			}
+			
+			function updateState( config )
+			{
+				pendulum.position.set(config[0], config[1], 0);
+				pendulum.rotation.set(0,0,configuration[2]);
+			}
+			
+			
+
+			function printData()
+			{
+				$("#data-display").empty();
+				$("#data-display").append("frameNumber = " + frameNumber + " <br> ");
+				$("#data-display").append("configuration = " + numeric.prettyPrint(configuration) + " <br> ");
+				$("#data-display").append("R = " + numeric.prettyPrint(R) + " <br> ");
+				$("#data-display").append("I = " + numeric.prettyPrint(I) + " <br> ");
+				$("#data-display").append("Iw = " + numeric.prettyPrint(Iw) + " <br> ");
+		
+				$("#data-display").append("sum_F = " + numeric.prettyPrint(sum_F) + " <br> ");
+				$("#data-display").append("F1 = " + numeric.prettyPrint(F1) + " length: " + F1.length() + " <br> ");
+				$("#data-display").append("r_w = " + numeric.prettyPrint(r_w) + " <br> ");
+				$("#data-display").append("w = " + numeric.prettyPrint(w) + " <br> ");
+				$("#data-display").append("rTilda = " + numeric.prettyPrint(rTilda) + " <br> ");
+				$("#data-display").append("torque = " + numeric.prettyPrint(torque) + " <br> ");
+				$("#data-display").append("torqueMinus = " + numeric.prettyPrint(torqueMinus) + " <br> ");
+				$("#data-display").append("constraintForce = " + numeric.prettyPrint(constraintForce) + " <br> ");
+				$("#data-display").append("A = " + numeric.prettyPrint(A) + " <br> ");
+				$("#data-display").append("b = " + numeric.prettyPrint(b) + " <br> ");
+				$("#data-display").append("acceleration vector, x = " + numeric.prettyPrint(x) + " <br> ");
+				$("#data-display").append("velocity = " + numeric.prettyPrint(velocity) + " <br> ");
+				$("#data-display").append("oldAngular = " + numeric.prettyPrint(oldAngular) + " <br> ");
+				$("#data-display").append("omegaDot = " + numeric.prettyPrint(omegaDot) + " <br> ");
+				$("#data-display").append("angularVelocity = " + numeric.prettyPrint(angularVelocity) + " <br> ");
+				// $("#data-display").append("Ax= " + numeric.prettyPrint(C) + " <br> ");
+				/*
+				$("#data-display").append("A_= " + numeric.prettyPrint(A_) + " <br> ");
+				$("#data-display").append("A_Sparse= " + numeric.prettyPrint(A_Sparse) + " <br> ");
+				$("#data-display").append("b_= " + numeric.prettyPrint(b_) + " <br> ");
+				$("#data-display").append("x_= " + numeric.prettyPrint(x_) + " <br> ");
+				$("#data-display").append("x_1= " + numeric.prettyPrint(x_1) + " <br> ");
+				$("#data-display").append("b_2= " + numeric.prettyPrint(b_2) + " <br> ");
+				*/
+				
+			}
+			// I = [Math.cos(theta)*mass, Math.sin(theta)*mass, 0]
+			
+			$( document ).ready(function() {
+				// $("#data-display").append("configuration = " + numeric.prettyPrint(configuration) + " <br> ");
+				// $("#data-display").append("I = " + numeric.prettyPrint(I) + " <br> ");
+	/*
+				$("#data-display").append("angularForce = " + numeric.prettyPrint(angularForce) + " <br> ");
+				$("#data-display").append("r = " + numeric.prettyPrint(r) + " <br> ");
+				$("#data-display").append("torque = " + numeric.prettyPrint(torque) + " <br> ");
+				$("#data-display").append("constraintForce = " + numeric.prettyPrint(constraintForce) + " <br> ");
+				$("#data-display").append("b = " + numeric.prettyPrint(b) + " <br> ");
+				$("#data-display").append("acceleration vector, x = " + numeric.prettyPrint(x) + " <br> ");
+				$("#data-display").append("velocity = " + numeric.prettyPrint(velocity) + " <br> ");
+				$("#data-display").append("angularVelocity = " + numeric.prettyPrint(angularVelocity) + " <br> ");
+		*/		
+				 
+			 });
+			// workshop.plot([numeric.transpose([x,y])]);
+		</script>
+		
+		
+		<script type="text/javascript">
+/*
+			$(function() {
+		
+				// We use an inline data source in the example, usually data would
+				// be fetched from a server
+		
+				var data = [],
+					totalPoints = 300;
+		
+				function getRandomData() {
+		
+					if (data.length > 0)
+						data = data.slice(1);
+		
+					// Do a random walk
+		
+					while (data.length < totalPoints) {
+		
+						var prev = data.length > 0 ? data[data.length - 1] : 50,
+							y = prev + Math.random() * 10 - 5;
+		
+						if (y < 0) {
+							y = 0;
+						} else if (y > 100) {
+							y = 100;
+						}
+		
+						data.push(y);
+					}
+		
+					// Zip the generated y values with the x values
+		
+					var res = [];
+					for (var i = 0; i < data.length; ++i) {
+						res.push([i, data[i]])
+					}
+		
+					return res;
+				}
+		
+				// Set up the control widget
+		
+				var updateInterval = 30;
+				$("#updateInterval").val(updateInterval).change(function () {
+					var v = $(this).val();
+					if (v && !isNaN(+v)) {
+						updateInterval = +v;
+						if (updateInterval < 1) {
+							updateInterval = 1;
+						} else if (updateInterval > 2000) {
+							updateInterval = 2000;
+						}
+						$(this).val("" + updateInterval);
+					}
+				});
+		
+				var plot = $.plot("#placeholder", [ getRandomData() ], {
+					series: {
+						shadowSize: 0	// Drawing is faster without shadows
+					},
+					yaxis: {
+						min: 0,
+						max: 100
+					},
+					xaxis: {
+						show: false
+					}
+				});
+		
+				function update() {
+		
+					plot.setData([getRandomData()]);
+		
+					// Since the axes don't change, we don't need to call plot.setupGrid()
+		
+					plot.draw();
+					setTimeout(update, updateInterval);
+				}
+		
+				update();
+		
+				// Add the Flot version string to the footer
+		
+				$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+			});
+			*/
+		
+			</script>
+			<!-- 
+		<div id="header">
+		<h2>Real-time updates</h2>
+	</div>
+
+	<div id="content">
+
+		<div class="demo-container">
+			<div id="placeholder" class="demo-placeholder"></div>
+		</div>
+
+		<p>You can update a chart periodically to get a real-time effect by using a timer to insert the new data in the plot and redraw it.</p>
+
+		<p>Time between updates: <input id="updateInterval" type="text" value="" style="text-align: right; width:5em"> milliseconds</p>
+
+	</div>
+
+	<div id="footer">
+		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen
+	</div>
+	 -->
+	<div id="data-display">
+	
+	</div>
+	<div>
+		<p>
+			The blue vector is the acceleration, The light blue (cyan) colour is the velcity. The green vector is the angular acceleration, the yellow if the angular velcity. The red vector is the applied rotational force.
+		</p>
+	
+	</div>
+
+	</body>
+</html>

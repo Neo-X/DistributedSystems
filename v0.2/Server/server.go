@@ -159,9 +159,10 @@ func CheckForNewNodes() {
 			members := strings.Split(activeMembers,  ",")
 			// add any new members
 			for i := 0; i < len(members); i++ {
+				/*
 				if (members[i] == activityserver.ActivityServerKey) { // skip activity server
 					continue
-				}
+				}*/
 				if _, ok := header.Nodes[members[i]]; ok {
 				    // do nothing if it already exsists
 				} else {
@@ -191,7 +192,7 @@ func CheckForNewNodes() {
 			for key, value := range header.Nodes {
 				fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )	
 				// check that this key is in active members
-				if ( strings.Contains(activeMembers, key) ) {
+				if ( strings.Contains(activeMembers, key) ) { // Not very fast...
 					continue
 				} else {
 					// remove from nodes

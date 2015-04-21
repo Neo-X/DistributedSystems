@@ -54,6 +54,7 @@ func main() {
 		os.Exit(1)
 	}
     
+    Put(*logFilePtr, "127.0.0.1:9995")
     Member(*ipandportPtr, *timePtr, *logFilePtr)
     
 
