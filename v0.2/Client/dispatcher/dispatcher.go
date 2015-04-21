@@ -68,6 +68,12 @@ func processMessage(msg dsgame.Message) {
 		header.MyAgent.Location = msg.Location
 	} else if ( msg.Action == dsgame.UpdateLocationAction ) {
 		ServiceUpdateLocationReq(msg)
+	} else if (msg.Action == dsgame.DestroyAction) {
+		var tmp dsgame.Agent
+		tmp = header.AgentDB[msg.Agent]
+		tmp.Location = msg.Location
+		header.AgentDB[msg.Agent] = tmp
+		fmt.Println(msg.Agent, " is destroyed !!!!!!!")
 	}
 
 }

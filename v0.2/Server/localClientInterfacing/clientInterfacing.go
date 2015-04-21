@@ -118,19 +118,23 @@ func sendDestroyReq(expectedhit_ClientName string, msg dsgame.Message) {
     } 
 	
 	_, err = conn_Server.Write(b)
-	var buf []byte = make([]byte, 1500) 
-
+//	var buf []byte = make([]byte, 1500) 
+	fmt.Println("sendDestroyReq sent.")
+/*
 	_, _, err = conn_Server.ReadFromUDP(buf) 
     if err != nil {
         fmt.Println("ReadFromUDP")
         fmt.Println(err)
     }
-	
+*/
 }
 
 func BroadcastDestroyMeReq(msg dsgame.Message) {
 	fmt.Println("I should broadcast destroy message")
 	msg.Action = dsgame.DestroyAction
+	msg.Client = header.MyClientName
+	msg.Agent = header.MyAgent.Name
+	msg.Location = dsgame.GetRandomDirection()
 	for _, conn := range header.Nodes {
 //-	for key, conn := range header.Nodes {
 //-		if (key != header.MyClientName) { // don't send message to self
@@ -159,9 +163,12 @@ func BroadcastDestroyMeReq(msg dsgame.Message) {
 *	Post-cond:		Destroy the agent, send it a new random location
 */
 func HandleDestroyReq(msg dsgame.Message) {
+	var tmp dsgame.Agent
+	tmp = header.AgentDB[msg.Agent]
+	tmp.Location = msg.Location
+	header.AgentDB[msg.Agent] = tmp
+	SendPositionforAgent(msg)
 	fmt.Println(msg.Client +" is Destroyed!!!!!!")
-	header.MyAgent.Location = dsgame.GetRandomDirection()
-	SendPositionOverrideforAgent()
 		
 }
 
