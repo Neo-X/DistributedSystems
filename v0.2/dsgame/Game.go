@@ -21,6 +21,7 @@ import(
 
 // exported variables must start with a capital letter....
 const UpdateLocationAction string = "UpdateLocation"
+const PositionOverrideAction string = "positionOverride"
 const JoinAction string = "Join"
 const FireAction string = "Fire"
 const DestroyAction string = "Destroy"
@@ -47,22 +48,23 @@ const FourthQuadrant int64 = 4
 	Kind of hacky way to handle any kind of message
 */
 type Message struct {
-	Action string
-    Client string
-    Agent string
-    TimeStamp int64
-    Location s3dm.V3
-    Target s3dm.V3
+	Action string // a key used to figure out what kind of action this messge describes  
+	Client string // This an identifier for the **node** this message is originating from (example node0)  
+	Agent string // Identifier to know which agent this message originated from  
+	TimeStamp int64 // This is more of a vector clock that is relative to the Agent  
+	Location s3dm.V3 // This is a location that could be used in processing, for example a update location message  
+	Target s3dm.V3 // This is a **Direction** (it is poorly named) that is used for the fire action in determining who gets shot.
 }
 
 type Agent struct {
-	Name string
-	Location s3dm.V3
-	TimeStamp int64
-	Direction s3dm.V3
+	Name string // The identifier for the agent  
+	Location s3dm.V3 // The current location of the agent  
+	TimeStamp int64 // The vector clock for the agent, can be used to determine order of events for an agent
+	LastUpdateTime int64 // The last time the server has recieved a message from this agent
+	Direction s3dm.V3 // This is the velocity of the agent (again poorly named) 
 }
 
-type Agents struct {
+type Agents struct { // Depreciated
 	//Agent string
 	TimeStamp int64
 	Location s3dm.V3 

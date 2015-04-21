@@ -22,7 +22,77 @@ func UpdateServerFrame(conn *net.UDPConn){
   for {
     sendUpdateLocation(conn)
     time.Sleep(1 * time.Second)
+    header.PrintState()
   }
+}
+
+/***
+*	Function Name: 	listenForMessages
+*	Desc:			This function listens on the connection for incoming messages
+*	Pre-cond:		takes connection argument
+*	Post-cond:		Runs until the end of the game
+*/
+func ListenForMessages(conn *net.UDPConn){ 
+  for {
+    var buf []byte = make([]byte, 1500) 
+	n, _, err := conn.ReadFromUDP(buf) 
+	// _, _, err = conn.ReadFromUDP(buf) 
+    if err != nil {
+        fmt.Println("ReadFromUDP")
+        fmt.Println(err)
+    } 
+	// fmt.Println("Wrote ", n, "bytes")
+	// fmt.Println(string(buf[0:n]))
+	var msg dsgame.Message
+	err = json.Unmarshal(buf[0:n], &msg)
+	if err != nil {
+		fmt.Println("Error handling message")
+		fmt.Println(err)
+		return
+	}
+	processMessage(msg)
+  }
+}
+
+/***
+*	Function Name: 	processMessage
+*	Desc:			This function will process a message
+*	Pre-cond:		takes a msg to be processed
+*	Post-cond:		Depends on the message but the message should be handled properly.
+*/
+func processMessage(msg dsgame.Message) {
+
+	if ( msg.Action == dsgame.PositionOverrideAction ) {
+		// override current agent location
+		fmt.Println("Overriding agent location")
+		header.MyAgent.Location = msg.Location
+	} else if ( msg.Action == dsgame.UpdateLocationAction ) {
+		ServiceUpdateLocationReq(msg)
+	}
+
+}
+
+
+/***
+*	Function Name: 	ServiceUpdateLocationReq()
+*	Desc:			The function provide service client move requests
+*	Pre-cond:		takes connection argument and the new location
+*	Post-cond:		list is updated with new location or return failure
+Also return failure on this being an invalid update??
+*/
+func ServiceUpdateLocationReq(msg dsgame.Message) bool {
+	// update server agent database
+	_timeNow := time.Now().UnixNano()
+
+	
+	var tmpObj dsgame.Agent // This covers the case when the agent has not been initialized yet, but I don't think we want this
+	tmpObj.TimeStamp = msg.TimeStamp
+	tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
+	tmpObj.LastUpdateTime = _timeNow
+	header.AgentDB[msg.Agent] = tmpObj
+	// fmt.Println("Location updated by:" + msg.Client)
+	// SendPositionforAgent(msg)
+	return true
 }
 
 
@@ -50,6 +120,7 @@ func sendUpdateLocation(conn *net.UDPConn) {
 	        fmt.Println(err)
 	    } 
 	
+/*
 		var buf []byte = make([]byte, 1500) 
 		//n, _, err = conn.ReadFromUDP(buf) 
 		 _, _, err = conn.ReadFromUDP(buf) 
@@ -59,6 +130,7 @@ func sendUpdateLocation(conn *net.UDPConn) {
 	    } 
 		// fmt.Println("Wrote ", n, "bytes")
 		//fmt.Println(string(buf[0:n]))
+*/
 }
 
 
@@ -76,12 +148,12 @@ func Fire(conn * net.UDPConn, _dir s3dm.V3){
 	        fmt.Println(err)
 	    } 
 		
-		n, err :=	conn.Write(b)
+		_, err =	conn.Write(b)
 	    if err != nil {
 	        fmt.Println("WriteUDP")
 	        fmt.Println(err)
 	    } 
-	
+	/*
 		var buf []byte = make([]byte, 1500) 
 		n, _, err = conn.ReadFromUDP(buf) 
 		// _, _, err = conn.ReadFromUDP(buf) 
@@ -91,6 +163,7 @@ func Fire(conn * net.UDPConn, _dir s3dm.V3){
 	    } 
 		// fmt.Println("Wrote ", n, "bytes")
 		fmt.Println(string(buf[0:n]))
+*/
 }
 
 /***
@@ -123,8 +196,9 @@ func Join( conn *net.UDPConn ){
         fmt.Println(err)
 	}
 	header.MyClientName = m.Client
-	header.MyAgent = dsgame.Agent{m.Agent, m.Location, 0, dsgame.GetRandomDirection()}
+	header.MyAgent = dsgame.Agent{m.Agent, m.Location, 0, time.Now().UnixNano(), dsgame.GetRandomDirection()}
 	header.SimulationTime = m.TimeStamp
+	header.AgentDB[header.MyAgent.Name] = header.MyAgent
 	
 	fmt.Println("clientName: " ,  header.MyClientName)
 	fmt.Println("agent: " ,  header.MyAgent.Name, " location: ", header.MyAgent.Location)

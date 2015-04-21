@@ -17,6 +17,8 @@ var MyAgent dsgame.Agent // string to identify the agent for this client
 
 var ClientAgentMap map[string]string // A map from client to the agent controlled by that client
 var Nodes map[string]*net.UDPConn // A map of the node name to the client connection to that node
+var ClientLink *net.UDPAddr // Comminucation link to the client for this node
+var Connection *net.UDPConn // Comminucation connection used by this server to send messages
 
 var AgentDB map[string]dsgame.Agent // Database of all agent details [agent -> <details>]
 var ClientOffset int // to generate new client name and agent name for new joinee

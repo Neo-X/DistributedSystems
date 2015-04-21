@@ -129,12 +129,14 @@ func main(){
            	fmt.Println("Error connecting to UDP client")
 		        fmt.Println(err)
          }*/
-      n, err :=	conn.WriteToUDP([]byte("Thank you for your message"), address)
+/*
+		n, err :=	conn.WriteToUDP([]byte("Thank you for your message"), address)
 
-		 	if err != nil {
+		if err != nil {
 		  	fmt.Println("WriteUDP Message", n)
 		    fmt.Println(err)
-		  } 
+		} 
+*/
 
 		}
 	}
@@ -256,7 +258,7 @@ func BroadcastClientLocationUpdate(msg dsgame.Message) {
 */
 func printState() {
 	
-	fmt.Println("Server game state")
+	fmt.Println("Game state")
 	/*
 	for key, value := range header.AgentsDB {
 		fmt.Println("client:", key, "time:", value.TimeStamp, " agent Location:", value.Location)	
