@@ -121,7 +121,7 @@ func main(){
       	// fmt.Println("from address", address, "got message:", string(buf[0:n]))
         ////// Everything should be good now
         handleMessage(conn , address, buf[0:n], *idPtr)
-     		printState()       	
+     		// printState()       	
       }
 
       /* conn, err := net.DialUDP("udp", nil, address)
@@ -189,8 +189,8 @@ func CheckForNewNodes() {
 			}
 			
 			// Remove stale members
-			for key, value := range header.Nodes {
-				fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )	
+			for key, _ := range header.Nodes {
+				// fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )	
 				// check that this key is in active members
 				if ( strings.Contains(activeMembers, key) ) { // Not very fast...
 					continue

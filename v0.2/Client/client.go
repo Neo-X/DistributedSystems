@@ -91,6 +91,8 @@ func main(){
 				header.MyAgent.Location.X = x
 				header.MyAgent.Location.Y = y
 				header.MyAgent.Location.Z = z
+				header.MyAgent.TimeStamp += 1
+				header.AgentDB[header.MyAgent.Name] = header.MyAgent
 				
 
 		} else if option == 2 {

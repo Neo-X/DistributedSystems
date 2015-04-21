@@ -27,15 +27,16 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 	// update server agent database
 	_timeNow := time.Now().UnixNano()
 	// if header.Nodes[msg.Client] == conn { // && header.ClientAgentMap[msg.Client] == msg.Agent { // [Glen] Maybe use some other invarients
+	
 	if ( header.MyAgent.Name == msg.Agent) { // Need to validate location update
 		// (NEW location - old location).length()*deltaTime < maxVelocity*deltaTime
-		fmt.Println("Checking for invalid location")
+		// fmt.Println("Checking for invalid location")
 		distance := msg.Location.Sub(header.AgentDB[msg.Agent].Location).Length()
 		
 		clientDeltaTime := _timeNow - header.AgentDB[msg.Agent].LastUpdateTime // Timestamps should be controlled by server?
 
 		deltaTime := float64(clientDeltaTime)/1000000000.0
-		fmt.Println("Checking for invalid location, msgTime", _timeNow, " agent time", header.AgentDB[msg.Agent].LastUpdateTime, " delta time in seconds", deltaTime)
+		// fmt.Println("Checking for invalid location, msgTime", _timeNow, " agent time", header.AgentDB[msg.Agent].LastUpdateTime, " delta time in seconds", deltaTime)
 		if ( (distance/deltaTime) > dsgame.GameMaxVelocity ) {
 			fmt.Println("Invalid location submitted by client:", msg.Client, " location", msg.Location, " deltaTime", deltaTime )
 			// need to send position override now.
@@ -44,6 +45,7 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 		} 
 	
 	}
+	
 		var tmpObj dsgame.Agent // This covers the case when the agent has not been initialized yet, but I don't think we want this
 		tmpObj.TimeStamp = msg.TimeStamp
 		tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
@@ -91,7 +93,8 @@ func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
 
 	} else { // if it is from other servers
 		// verify if it hits me
-		if (dsgame.RayHitsAgent(header.MyAgent.Location,msg.Location,msg.Target)) { // if it hits me, broadcast destroy msg
+		if (dsgame.RayHitsAgent(header.AgentDB[header.MyAgent.Name].Location,msg.Location,msg.Target)) { // if it hits me, broadcast destroy msg
+			RespawnAgent()
 			BroadcastDestroyMeReq(msg)
 		} else { //if doesn't, ignore msg
 			fmt.Println("----->I updated my loc, just before getting hit")
@@ -134,17 +137,18 @@ func BroadcastDestroyMeReq(msg dsgame.Message) {
 	msg.Action = dsgame.DestroyAction
 	msg.Client = header.MyClientName
 	msg.Agent = header.MyAgent.Name
-	msg.Location = dsgame.GetRandomDirection()
+	msg.Location = dsgame.GetRandomLocation()
+	
+	b, err := json.Marshal(msg)
+	if err != nil {
+        fmt.Println("Problem marshalling struct")
+        fmt.Println(err)
+    } 
 	for _, conn := range header.Nodes {
 //-	for key, conn := range header.Nodes {
 //-		if (key != header.MyClientName) { // don't send message to self
 			// fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )
 		
-			b, err := json.Marshal(msg)
-			if err != nil {
-		        fmt.Println("Problem marshalling struct")
-		        fmt.Println(err)
-		    } 
 			
 			_, err =	conn.Write(b)
 		    if err != nil {
@@ -242,12 +246,7 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 	tmpObj.Name = _msg.Agent
 	header.AgentDB[_msg.Agent] = tmpObj
 	header.ClientAgentMap[_msg.Client] = _msg.Agent 
-	
-	
-
 	//fmt.Println(string(buf[0:n]))
-
-	
 }
 
 
@@ -261,6 +260,25 @@ func ServiceJoinReq(conn *net.UDPConn, clientAddr *net.UDPAddr, msg dsgame.Messa
 func getNextClientID() (string,string){
 	header.ClientOffset++
 	return "client" + strconv.Itoa(header.ClientOffset), "agent" + strconv.Itoa(header.ClientOffset)
+}
+
+/***
+*	Function Name: 	RespawnAgent()
+*	Desc:			Really just changes to location of the agent
+*	Pre-cond:		Don't think it needs any arguments.
+*	Post-cond:		The client agent should be at a new location
+
+	Warning!! Is there a race condition here between this updating the agent location and the 
+	location update writing the agent location?? Probably need to use the agent event TimeStamp
+	to ignore bad messages.
+*/
+func RespawnAgent() {
+	
+	agent := header.AgentDB[header.MyAgent.Name]
+	agent.Location = dsgame.GetRandomLocation()
+	header.AgentDB[header.MyAgent.Name] = agent
+	fmt.Println("New location for desroyed agent", header.AgentDB[header.MyAgent.Name].Location) 
+	SendPositionOverrideforAgent()
 }
 
 /***
