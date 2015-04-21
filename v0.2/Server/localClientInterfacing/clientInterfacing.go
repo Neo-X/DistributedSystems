@@ -29,6 +29,7 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 		tmpObj.TimeStamp = msg.TimeStamp
 		tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
 		header.AgentDB[msg.Agent] = tmpObj
+		header.ClientAgentMap[msg.Client] = msg.Agent
 		fmt.Println("Location updated by:" + msg.Client)
 		return true
 	// } else {
@@ -45,21 +46,89 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 *	Post-cond:		Destroy the client or returns failure
 */
 func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
-	fmt.Println("Firing projectile  ", msg.Target)
+	fmt.Println()
+	fmt.Println("Firing projectile --->> ", msg.Target)
 	fmt.Println("From agent  ", msg.Client)
+	fmt.Println()
 	pos := header.AgentDB[msg.Agent].Location
 	// destroy the client if valid
-	
-	for key, value := range header.AgentDB {
- 		// fmt.Println("agent:", key, " agent Location:", value.Location)
- 	  if (key != msg.Agent ) { // Ignore intersections with self
-			if (dsgame.RayHitsAgent(value.Location, pos, msg.Target)) {
- 	   		// fmt.Println("Ray hit agent", key)
- 	   		handleDestroyReq(conn, value) 
- 	   	} 	   	
- 	  }
- 	}
 
+	if header.MyAgent.Name == msg.Agent { // if it is from my client
+		for key, val := range header.ClientAgentMap {
+ 			 fmt.Println("Client:", key, " agent :", val)
+ 			// fmt.Println("agent:", key, " agent Location:", value.Location)
+		 value :=	header.AgentDB[val]
+ 	 	 if (val != msg.Agent ) { // Ignore intersections with self
+				if (dsgame.RayHitsAgent(value.Location, pos, msg.Target)) {
+	 	   		// fmt.Println("Ray hit agent", key)
+					//send that client a destroy request
+ 		   		sendDestroyReq(key, msg) 
+					break; // assuming it hits single agent only
+ 		   	} 	   	
+ 		  }
+ 		}
+
+	} else { // if it is from other servers
+		// verify if it hits me
+		if (dsgame.RayHitsAgent(header.MyAgent.Location,msg.Location,msg.Target)) { // if it hits me, broadcast destroy msg
+			BroadcastDestroyMeReq(msg)
+		} else { //if doesn't, ignore msg
+			fmt.Println("----->I updated my loc, just before getting hit")
+		}
+	}
+	
+}
+
+func sendDestroyReq(expectedhit_ClientName string, msg dsgame.Message) {
+/*	conn, err := net.ResolveUDPAddr("udp",header.Nodes[expectedhit_ClientName])
+/	conn_server, err := net.DialUDP("udp", nil, header.Nodes[expectedhit_ClientName])
+		if err != nil {
+        fmt.Println("Error connecting to " , expectedhit_ClientName)
+        fmt.Println(err)
+        return
+    }
+*/
+	//fmt.Println("Inside sendDestroyReq")
+	conn_Server := header.Nodes[expectedhit_ClientName]
+	b, err := json.Marshal(msg)
+		if err != nil {
+        fmt.Println("Problem marshalling struct")
+        fmt.Println(err)
+    } 
+	
+	_, err = conn_Server.Write(b)
+	var buf []byte = make([]byte, 1500) 
+
+	_, _, err = conn_Server.ReadFromUDP(buf) 
+    if err != nil {
+        fmt.Println("ReadFromUDP")
+        fmt.Println(err)
+    }
+	
+}
+
+func BroadcastDestroyMeReq(msg dsgame.Message) {
+	fmt.Println("I should broadcast destroy message")
+	msg.Action = dsgame.DestroyAction
+	for _, conn := range header.Nodes {
+//-	for key, conn := range header.Nodes {
+//-		if (key != header.MyClientName) { // don't send message to self
+			// fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )
+		
+			b, err := json.Marshal(msg)
+			if err != nil {
+		        fmt.Println("Problem marshalling struct")
+		        fmt.Println(err)
+		    } 
+			
+			_, err =	conn.Write(b)
+		    if err != nil {
+		        fmt.Println("WriteUDP")
+		        fmt.Println(err)
+		    } 
+		
+	//-	}	
+ 	}
 }
 
 /***
@@ -68,8 +137,9 @@ func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
 *	Pre-cond:		takes connection argument and name of agent that is destoroid
 *	Post-cond:		Destroy the agent, send it a new random location
 */
-func handleDestroyReq(conn *net.UDPConn, agent dsgame.Agent) {
-	
+func HandleDestroyReq(msg dsgame.Message) {
+	//TBD
+	fmt.Println(msg.Client +" is Destroyed!!!!!!")
 	
 }
 

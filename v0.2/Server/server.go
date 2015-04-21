@@ -219,6 +219,8 @@ func handleMessage(conn *net.UDPConn, clientAddr *net.UDPAddr, buf []byte, id ui
 		}
 	}else if msg.Action == dsgame.FireAction {
 		localClientInterfacing.ServiceFireReq(conn, msg)
+	} else if msg.Action == dsgame.DestroyAction {
+		localClientInterfacing.HandleDestroyReq(msg)
   }else {
 		fmt.Println("Message not understood: ")
   }
