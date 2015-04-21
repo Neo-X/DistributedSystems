@@ -21,7 +21,8 @@ import(
 func UpdateServerFrame(conn *net.UDPConn){ 
   for {
     sendUpdateLocation(conn)
-    time.Sleep(1 * time.Second)
+    // time.Sleep(0.2 * time.Second)
+    time.Sleep(dsgame.GameMessageDeltaTime)
     // header.PrintState()
   }
 }

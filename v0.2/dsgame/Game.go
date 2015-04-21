@@ -12,7 +12,7 @@
 package dsgame
 
 import(
-	"fmt"
+	// "fmt"
 	"../s3dm"
 	"../fixed"
 	"math/rand"
@@ -98,9 +98,10 @@ func RayHitsAgent(agentLoc, rayOrigin, rayDir s3dm.V3) bool {
 	var _sphere *s3dm.Sphere
 	_sphere = s3dm.NewSphere(s3dm.Position{fixed.New(agentLoc.X), fixed.New(agentLoc.Y), fixed.New(agentLoc.Z)}, AgentRadius)
 	
-	_hit, _pos, _dir := _sphere.Intersect(&_ray)
+	// _hit, _pos, _dir := _sphere.Intersect(&_ray)
+	_hit, _, _ := _sphere.Intersect(&_ray)
 	
-	fmt.Println("Intersection at", _pos.V3() , " in direction ", _dir)
+	// fmt.Println("Intersection at", _pos.V3() , " in direction ", _dir)
 	return _hit
 	
 } 

@@ -16,7 +16,7 @@ import(
 //	"encoding/json"
 	"../dsgame"
 //"../fixed"
-	"../s3dm"
+//	"../s3dm"
 	"./dispatcher"	
 //	"./listener"
 	"./header"
@@ -41,7 +41,7 @@ func main(){
 	//service := header.LocalServerIP_Port
 	
 	
-	dsgame.GameMessageDeltaTime, _ = time.ParseDuration("300ms")
+	dsgame.GameMessageDeltaTime, _ = time.ParseDuration("100ms")
 	/*
 	if err != nil {
         fmt.Println("Error parsing time duration ", dsgame.GameDeltaTime)
@@ -73,10 +73,12 @@ func main(){
 	fmt.Println("Game Started...")
 	
 	go dispatcher.UpdateServerFrame(conn)
-	go RunAgent(conn)
 	go dispatcher.ListenForMessages(conn)
 
-	// simulating temporary sendUpdateLocation()	
+
+	RunAgent(conn)
+	// simulating temporary sendUpdateLocation()
+	/*	
 	for {
 		fmt.Println("Select Option:\n 1. Move\n 2. Fire")
 		//option,_ := reader.ReadString()
@@ -112,6 +114,7 @@ func main(){
 		}
 		// time.Sleep(1 * time.Second)
 	}
+	*/
 
 	// To update a location of an agent
 	// 1. update location in agent.Location
@@ -145,9 +148,10 @@ func RunAgent(conn *net.UDPConn) {
 		// Ramdom fire requests
 		if (fireTime == 0) {
 			direction := dsgame.GetRandomDirection()
-			fmt.Println("Agent: shooting", direction) 
+			// fmt.Println("Agent: shooting from", header.MyAgent.Location, "in direction", direction) 
 			dispatcher.Fire(conn,direction)
-			fireTime = dsgame.GetNextFireTime() + 1
+			// fireTime = dsgame.GetNextFireTime() + 1
+			fireTime = 1
 		}
 		fireTime = fireTime - 1;
 		time.Sleep(dsgame.GameMessageDeltaTime)

@@ -69,16 +69,16 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 *	Post-cond:		Destroy the client or returns failure
 */
 func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
-	fmt.Println()
-	fmt.Println("Firing projectile --->> ", msg.Target)
-	fmt.Println("From agent  ", msg.Client)
-	fmt.Println()
+	// fmt.Println()
+	// fmt.Println("Firing projectile --->> loc", header.AgentDB[msg.Agent].Location, " dir" , msg.Target)
+	// fmt.Println("From agent  ", msg.Client)
+	// fmt.Println()
 	pos := header.AgentDB[msg.Agent].Location
 	// destroy the client if valid
 
 	if header.MyAgent.Name == msg.Agent { // if it is from my client
 		for key, val := range header.ClientAgentMap {
- 			 fmt.Println("Client:", key, " agent :", val)
+ 			 // fmt.Println("Client:", key, " agent :", val)
  			// fmt.Println("agent:", key, " agent Location:", value.Location)
 		 value :=	header.AgentDB[val]
  	 	 if (val != msg.Agent ) { // Ignore intersections with self
@@ -137,7 +137,7 @@ func BroadcastDestroyMeReq(msg dsgame.Message) {
 	msg.Action = dsgame.DestroyAction
 	msg.Client = header.MyClientName
 	msg.Agent = header.MyAgent.Name
-	msg.Location = dsgame.GetRandomLocation()
+	msg.Location = header.AgentDB[header.MyAgent.Name].Location
 	
 	b, err := json.Marshal(msg)
 	if err != nil {

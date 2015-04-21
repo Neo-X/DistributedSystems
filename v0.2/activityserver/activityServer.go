@@ -184,14 +184,18 @@ func isLeader(id string) bool {
 }
 
 func updateMember(memberID string) string {
-	newMembers := Get(newMembersKey)
+	var val string
+	val = " "
 	var appendMembers string
-	if (newMembers == "" ){
-		appendMembers = memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
-	} else {
-		appendMembers = newMembers + memDelimiter + memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
-	}
-	val := TestSet(newMembersKey,newMembers, appendMembers) 
+	for ( val != appendMembers ) {
+		newMembers := Get(newMembersKey)
+		if (newMembers == "" ){
+			appendMembers = memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
+		} else {
+			appendMembers = newMembers + memDelimiter + memberID + keyValDelimiter + strconv.FormatInt(time.Now().UnixNano(), 10)
+		}
+		val = TestSet(newMembersKey,newMembers, appendMembers)
+	} 
 	
 	return val
 }
@@ -272,7 +276,7 @@ func Member(address string, _time int64, logFile string) {
     			_timeNow := strconv.FormatInt(time.Now().UnixNano(), 10)
     			setLeader(id+keyValDelimiter+_timeNow, leader)
     		}
-    		time.Sleep(5 * time.Second)
+    		time.Sleep(2 * time.Second)
     	}
     	
 		fmt.Println("\n Leader: ", leader)
