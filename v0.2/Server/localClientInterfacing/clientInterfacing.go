@@ -49,7 +49,8 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 		tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
 		tmpObj.LastUpdateTime = _timeNow
 		header.AgentDB[msg.Agent] = tmpObj
-		fmt.Println("Location updated by:" + msg.Client)
+		header.ClientAgentMap[msg.Client] = msg.Agent // This does not need to be set so often
+		// fmt.Println("Location updated by:" + msg.Client)
 		SendPositionforAgent(msg)
 		return true
 	// } else {

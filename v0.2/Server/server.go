@@ -187,11 +187,43 @@ func CheckForNewNodes() {
 					
 			}
 			
+			// Remove stale members
+			for key, value := range header.Nodes {
+				fmt.Println("node:", key, "ip:", value.RemoteAddr().String() )	
+				// check that this key is in active members
+				if ( strings.Contains(activeMembers, key) ) {
+					continue
+				} else {
+					// remove from nodes
+					removeNode(key)
+					
+				}
+				
+		 	}
+			
 		}
 		time.Sleep(1*time.Second)
 		// printState()	
 	}
 	
+	
+}
+
+
+/***
+*	Function Name: 	removeNode()
+*	Desc:			This function removes all of the data pertaining to the specified node
+*	Pre-cond:		key to the node
+*	Post-cond:		node should be removed from Nodes and all data for the agent related to that node should be removed
+*/
+func removeNode(key string) {
+	fmt.Println("***** Removing inactive node from system:", key, "*******")
+	// remove node
+	delete(header.Nodes, key)
+	
+	// remove agent data
+	agentName := header.ClientAgentMap[key]
+	delete(header.AgentDB, agentName)	
 	
 }
 
