@@ -67,11 +67,11 @@ func main(){
         fmt.Println(err)
         return
     }
-
+	header.AgentDB = make(map[string]dsgame.Agent)
 	dispatcher.Join(conn)	
 
 	fmt.Println("Game Started...")
-
+	
 	go dispatcher.UpdateServerFrame(conn)
 	go RunAgent(conn)
 	go dispatcher.ListenForMessages(conn)
@@ -127,7 +127,8 @@ func RunAgent(conn *net.UDPConn) {
 
 		header.MyAgent.TimeStamp += 1
 		header.MyAgent.Location = header.MyAgent.Location.Add(header.MyAgent.Direction.Muls(dsgame.GameDeltaTime*2))
-		fmt.Println("Agent: moving", header.MyAgent.Location)
+		header.AgentDB[header.MyAgent.Name] = header.MyAgent
+		// fmt.Println("Agent: moving", header.MyAgent.Location)
 		if (header.MyAgent.Location.X > dsgame.GameUpperBound) || (header.MyAgent.Location.X < dsgame.GameLowerBound) {
 			header.MyAgent.Direction.X = header.MyAgent.Direction.X*-1.0 
 		}

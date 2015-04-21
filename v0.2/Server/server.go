@@ -256,7 +256,7 @@ func BroadcastClientLocationUpdate(msg dsgame.Message) {
 */
 func printState() {
 	
-	fmt.Println("Server game state")
+	fmt.Println("Game state")
 	/*
 	for key, value := range header.AgentsDB {
 		fmt.Println("client:", key, "time:", value.TimeStamp, " agent Location:", value.Location)	

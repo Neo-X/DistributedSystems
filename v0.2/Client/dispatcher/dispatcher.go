@@ -22,6 +22,7 @@ func UpdateServerFrame(conn *net.UDPConn){
   for {
     sendUpdateLocation(conn)
     time.Sleep(1 * time.Second)
+    header.PrintState()
   }
 }
 
@@ -41,7 +42,7 @@ func ListenForMessages(conn *net.UDPConn){
         fmt.Println(err)
     } 
 	// fmt.Println("Wrote ", n, "bytes")
-	fmt.Println(string(buf[0:n]))
+	// fmt.Println(string(buf[0:n]))
 	var msg dsgame.Message
 	err = json.Unmarshal(buf[0:n], &msg)
 	if err != nil {
@@ -65,9 +66,35 @@ func processMessage(msg dsgame.Message) {
 		// override current agent location
 		fmt.Println("Overriding agent location")
 		header.MyAgent.Location = msg.Location
+	} else if ( msg.Action == dsgame.UpdateLocationAction ) {
+		ServiceUpdateLocationReq(msg)
 	}
 
 }
+
+
+/***
+*	Function Name: 	ServiceUpdateLocationReq()
+*	Desc:			The function provide service client move requests
+*	Pre-cond:		takes connection argument and the new location
+*	Post-cond:		list is updated with new location or return failure
+Also return failure on this being an invalid update??
+*/
+func ServiceUpdateLocationReq(msg dsgame.Message) bool {
+	// update server agent database
+	_timeNow := time.Now().UnixNano()
+
+	
+	var tmpObj dsgame.Agent // This covers the case when the agent has not been initialized yet, but I don't think we want this
+	tmpObj.TimeStamp = msg.TimeStamp
+	tmpObj.Location = s3dm.V3{msg.Location.X,msg.Location.Y,msg.Location.Z}
+	tmpObj.LastUpdateTime = _timeNow
+	header.AgentDB[msg.Agent] = tmpObj
+	// fmt.Println("Location updated by:" + msg.Client)
+	// SendPositionforAgent(msg)
+	return true
+}
+
 
 
 /***
@@ -171,6 +198,7 @@ func Join( conn *net.UDPConn ){
 	header.MyClientName = m.Client
 	header.MyAgent = dsgame.Agent{m.Agent, m.Location, 0, time.Now().UnixNano(), dsgame.GetRandomDirection()}
 	header.SimulationTime = m.TimeStamp
+	header.AgentDB[header.MyAgent.Name] = header.MyAgent
 	
 	fmt.Println("clientName: " ,  header.MyClientName)
 	fmt.Println("agent: " ,  header.MyAgent.Name, " location: ", header.MyAgent.Location)

@@ -17,8 +17,8 @@ import(
 
 
 /***
-*	Function Name: 	serviceMoveReq()
-*	Desc:			The function provide service to client's move request
+*	Function Name: 	ServiceUpdateLocationReq()
+*	Desc:			The function provide service client move requests
 *	Pre-cond:		takes connection argument and the new location
 *	Post-cond:		list is updated with new location or return failure
 Also return failure on this being an invalid update??
@@ -50,6 +50,7 @@ func ServiceUpdateLocationReq(conn *net.UDPConn, msg dsgame.Message) bool {
 		tmpObj.LastUpdateTime = _timeNow
 		header.AgentDB[msg.Agent] = tmpObj
 		fmt.Println("Location updated by:" + msg.Client)
+		SendPositionforAgent(msg)
 		return true
 	// } else {
 		// fmt.Println("something seems fishy with the agent updates")
@@ -185,7 +186,7 @@ func getNextClientID() (string,string){
 }
 
 /***
-*	Function Name: 	getNextClientID()
+*	Function Name: 	SendPositionOverrideforAgent()
 *	Desc:			Sends a message back to the client overwriting the location of the agent
 *	Pre-cond:		Don't think it needs any arguments.
 *	Post-cond:		The message should be sent and hopefully the client will update the agent location
@@ -209,6 +210,30 @@ func SendPositionOverrideforAgent() {
 		fmt.Println("Problem sending Position override to client")
         fmt.Println(err)
 	}
+}
+
+/***
+*	Function Name: 	SendPositionforAgent()
+*	Desc:			Sends a message back to the client for the location of the agent
+*	Pre-cond:		Don't think it needs any arguments.
+*	Post-cond:		The message should be sent and hopefully the client will update the agent location
+*/
+func SendPositionforAgent(_msg dsgame.Message) {
+	 
+	b, err := json.Marshal(_msg)
+		if err != nil {
+        fmt.Println("Problem marshalling struct")
+        fmt.Println(err)
+    } 
+
+	if ( header.Connection != nil ) { // There is kind of a gray area for this first message, before the client has joined properly
+		_, err = header.Connection.WriteToUDP(b,header.ClientLink)
+		if ( err != nil ) {
+			fmt.Println("Problem sending Position override to client")
+	        fmt.Println(err)
+		}	
+	}
+	
 }
 
 
