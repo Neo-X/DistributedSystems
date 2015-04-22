@@ -9,11 +9,11 @@
 
 	In this section we outline our solution to our distributed state synchronization design. We discus what protocols are used, how the clients and servers communicate and the example game constructed for this system.
 	
-\subsection{The Client}
+\subsection{The Clients}
 
-	The client locally simulates its own version of the game. To support this the client needs to keep a list of the agents controlled by other clients in the game and the most recent location of each agent. This information will be stored in a \emph{hashmap}. After every frame is rendered in the game the client will send a position update to all servers.
+	The client locally simulates its own version of the game. To support this the client needs to keep a list of the agents controlled by other clients in the game and the most recent location of each agent. This information will be stored in a \emph{hashmap}. After every frame is rendered in the game the client will broadcast a position update to all servers.
 	
-\subsection{The Server}
+\subsection{The Servers}
 
 	The server simulates its own version of the game. The server is not used just to reduce message passing but also to act as an authority over clients, to prevent malicious clients from propagating invalid information.
 	
@@ -28,6 +28,12 @@
 	\end{enumerate}
 	
 	This way the server keeps the true state of the game and informs the clients of valid updates to the server's state. To perform these operations the server needs to have state for the currently active clients and its own version of the game state.
+
+\subsection{The Activity Server}
+	The purpose of Activity Server is to support the architecture of the System which includes allowing a new node to join th system and publishing the list of nodes which are currently online. The Activity Server doesn't do any kind og game simulation niether involves in game semantic actions.
+
+\subsection{The KV-Service}
+	The KV-Service is a key-value service which used for all communication among the nodes and the activity server that is required to maintain the system. The servers periodically update their entry in the KV-Service. The activity server polls with twice the period rest of the servers are polling. The activity server read the entries of all the nodes and publish a list of nodes including all those nodes who have recently updated their entry. 
 
 \subsection{The Game}
 
