@@ -10,6 +10,7 @@ import(
 //	"encoding/json"
 	// "sync"
 //	"strconv"
+//-	"time"
 )
 
 var MyClientName string // string to idetify this client
@@ -27,6 +28,7 @@ var ServiceIP_Port string = "127.0.0.1:5000"
 var CentralServerIP_Port string = "127.0.0.1:10000"
 const KvService string = "127.0.0.1:12345"
 
+var StartTime int64
 
 /* Intermidiate state databases */
 

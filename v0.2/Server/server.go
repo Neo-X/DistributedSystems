@@ -106,6 +106,7 @@ func main(){
 	var buf []byte = make([]byte, 1500)   
 	
 	_startTime := time.Now().UnixNano()
+	header.StartTime = _startTime
   for n := int64(0); n >= 0; n++ {
 	 	n,address, err := conn.ReadFromUDP(buf)
 	 	if err != nil {

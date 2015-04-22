@@ -12,7 +12,7 @@ import(
 	"strconv"
 	"../header"
 	"time"
-	
+//-	"os"	
 )
 
 
@@ -97,6 +97,8 @@ func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
 			RespawnAgent()
 			header.ShotsPassed+=1
 			BroadcastDestroyMeReq(msg)
+//-			fmt.Println("Time Taken: ", strconv.FormatInt(time.Now().UnixNano() - header.StartTime ,10), "\tFailed Shots: ", header.ShotsFailed )
+//-			os.Exit(0)
 		} else { //if doesn't, ignore msg
 			fmt.Println("----->I updated my loc, just before getting hit")
 			header.ShotsFailed+=1
