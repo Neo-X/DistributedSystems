@@ -1,6 +1,10 @@
 
 \section{Overview of Technology}
 
+In this section an overview of online multiplayer systems is given. For a recent survey of multiplayer online game frameworks we refer the reader to~\cite{Yahyavi:2013:PAM:2522968.2522977}. 
+
+\subsection{Multiplayer Network Design}
+
 To build an online real-time multiplayer game, there are two popular methods.
 One, is \ptoP \emph{lockstep}, which is based on the \ptoP architecture.
 A diagram of the \ptoP communication structure is shown in Figure~\ref{figure:p2p-vs-ClientServer}(a).
@@ -10,7 +14,7 @@ The overall latency of the system is then dependent on the slowest node in the s
 This system is also not tolerant to faulty nodes, as each node will wait and decide themselves if a node has failed.
 Since the nodes use broadcasts to communicate, the method generates a significant volume of messages.
 
-To achieve better real-time simulation, systems switched to a \clientServer model (see Figure~\ref{figure:p2p-vs-ClientServer}(b))~\cite{DOOMfaq}. 
+To achieve more real-time simulation, systems switched to a \clientServer model (see Figure~\ref{figure:p2p-vs-ClientServer}(b))~\cite{DOOMfaq}. 
 With this model the \gamestate is stored on a server and clients send updates to the server.
 This model reduces latency, for each client the latency is determined by the connection between that client and the server.
 However, this model is still too slow for real-time online multiplayer games, which lead to the introduction of client-side prediction~\cite{bernier2001latency}.
@@ -21,10 +25,6 @@ Another reason for this model to gain traction was the ability to handle malicio
 
 % The \ptoP model does handle fault tolerance more gracefully. Having the single server in the \clientServer model results in little fault tolerance.
 
-\subsection{Multiplayer Network Design}
-
-	There are two common networking structures for multiplayer gaming. The first is \ptoP, with the structure each client sends state updated to each other client in the game.
-	The second, and more common, is the \clientServer design. In the \clientServer design each client sends updates to a single server and this server will relay these messages to the other clients playing the game. The communication structure for this design can be seen in Figure~\ref{figure:p2p-vs-ClientServer}(b).
 	
 \begin{figure}[ht]
 	\centering
@@ -39,12 +39,14 @@ Another reason for this model to gain traction was the ability to handle malicio
 	\caption{\label{figure:p2p-vs-ClientServer} Two mutiplayer game networking models. The model on the left (a) is a \ptoP model where every client sends updates directly to ever other client in the game. The second model (b) is a \clientServer model. In this model all of the clients send updates to the server and the server send updates out to the clients.}
 	\end{figure}
 	
-	We choose to base our work off of the \clientServer model for a number of reasons
+	The system designed in this work uses parts from both the \ptoP model and the \clientServer model. The features of each method that we want to incorporate are:
 	\begin{enumerate}
 		\item The \clientServer model tends to have less latency
 		\item The \clientServer model supports clients joining mid game
-		\item The \clientServer model is less susceptible to cheating/malicious clients.
+		\item The \clientServer model is less susceptible to cheating/malicious clients
+		\item The \ptoP model is more fault tolerant
+		\item the \ptoP model has distributed state
 	\end{enumerate}
 	
-	As in most multiplayer game networking systems asynchronous communication is used. This is necessary to preserve the real-time nature of the game. Packet loss is considered not significant as a new packet with more up-to-date information will be sent soon after the lost packet.
+	As in many multiplayer game networking systems, asynchronous communication is used. This is necessary to preserve the real-time nature of a game. Packet loss is considered not significant as a new packet with more up-to-date information will be sent soon after the lost packet.
 	

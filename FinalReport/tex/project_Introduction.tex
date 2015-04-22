@@ -2,7 +2,7 @@
 \section{Introduction}
 \label{sec:Intro}
 
-To build an online real-time  multiplayer game, there are two popular methods.
+To build an online real-time multiplayer game, there are two popular methods.
 One, is \ptoP \emph{lockstep}, which is based on the \ptoP architecture.
 In this approach, all nodes start in the same initial state and each node broadcast every move to the all other nodes.
 The overall performance of the system is dependent on slower nodes in the system.
@@ -10,24 +10,26 @@ Moreover, since the nodes use broadcasts to communicate, the method generates a 
 
 A second method is based on the client-server architecture, in which the game is also simulated on a server and each clients sends updates to the server.
 The drawbacks of this method is that the server can become a bottleneck to the system performance and is a single point of failure.
+From the point of view of support for this system there needs to be a large investment in infrastructure.
 Also, due to additional game simulation load on the server, this approach is not scalable.
+
+Cheating is serious problem in online games.
+The gameplay needs to be fair in order to keep players interested in the game. 
+Cheating can be done by players in the game sending information to other clients that should not be possible according to the current game state and invariants on the capabilities of the players in the game.
+In the \ptoP architecture protecting against cheating is very difficult as clients send information directly to other clients.
+The \clientServer method handles malicious players by simulating the game on an \emph{authoritative} server that verifies updates from clients.
+In this work the concept of an authoritative server is extended to a distributed authoritative server.
+Then, depending on the semantics of the game a particular authoritative server will verify propose \gamestate update.
 
 We propose to construct a distributed \clientServer model in order to gracefully handle fail-stop scenarios.
 We will use this system to support a simple computer game of a number of agents moving around in a 3D world called the \gamestate.
 We assume no limits on bandwidth and have strong constraints on latency which significantly impacts online game experience~\cite{Claypool:2006:LPA:1167838.1167860}.
 
-This gets very complicated, why have all the infrastructure? Why not just use a peer-to-peer (not lockstep) method? Two reasons, the first is that players could not join a game in progress. Second, the client can (and will) cheat, sending faulty position information to everyone in order to gain an advantage.
-
-It would be nice if we could completely trust clients but we can’t. What if we could trust them a little? If we can trust clients a little we can use them as servers. If we can have a client as server we might be able to reduce latency by choosing the best client to act as the server.
-
-What has not been mentioned in this discussion is fault tolerance. A client/server model has a single point of failure, the server. This can be very bothersome to players of the game that have invested a large amount of time into the game. 
-
-Also having the single server model results in little fault tolerance. Not to mention the company has to construct many expensive servers so the clients can play.
-
-Benefit of this solution:
-Having a more fault tolerant system using a distributed server. 
-Reducing latency by reducing by picking good servers
-All online multiplayer systems are best effort. If we can create a system with the same responsiveness with fault tolerance then it is a success.
+% Benefit of this solution:
+% Having a more fault tolerant system using a distributed server. 
+% Reducing latency by reducing by picking good servers
+All online multiplayer systems are best-effort.
+If we can create a system with the same responsiveness with fault tolerance then it is a success.
 
 	
 
