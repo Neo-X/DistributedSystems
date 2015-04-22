@@ -50,7 +50,7 @@
 \subsection{Distributed Servers}
 \label{subsec:distributed-servers}
 
-	We construct a distributed server model (see Figure~\ref{figure:server-models}(b)) to enable better failure handling in our system. Each client will be paired with a server. Each server will act as the authoritative server for a subset of the clients. The authoritative server for a particular client will depend on the event/action being processed. 
+	We construct a distributed server model (see Figure~\ref{figure:server-models}(b)) to enable better failure handling in our system. Each client is paired with a server which is running on the same machine. The paired server validates the actions performed by client and process it further if the action is found valid. The authoritative server for a particular client depends on the event/action being processed. 
 	
 	\begin{figure}[ht]
 	\centering
