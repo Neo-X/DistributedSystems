@@ -12,7 +12,7 @@ sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 sock.bind((UDP_IP, UDP_PORT))
 
-name = 'ball_glut'
+name = 'ARM: Game'
 
 agentDB={}
 def main():
@@ -65,6 +65,21 @@ def display():
         glMaterialfv(GL_FRONT,GL_SPECULAR,color)
         glutWireCube(21)
         glPopMatrix()
+        
+        """
+        glPushMatrix()
+        color = [1.0,1.0,0.0,1.0]
+        # glColor4f(0,0,1,.5)
+        glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
+        glMaterialfv(GL_FRONT,GL_SPECULAR,color) 
+        glPointSize(3.0);  
+    
+        glBegin(GL_LINES);
+        glVertex3d(0, 0, 0);
+        glVertex3d(0, 10.5, 0);
+        glEnd();
+        glPopMatrix()
+        """
 
         # print "Size of agent DB" + str(len(agentDB))
         for agent, location in agentDB.iteritems():
