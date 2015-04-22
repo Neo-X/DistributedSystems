@@ -35,7 +35,7 @@
 \subsection{The KV-Service}
 	The KV-Service is a key-value service which used for all communication among the nodes and the activity server that is required to maintain the system. The servers periodically update their entry in the KV-Service. The activity server polls with twice the period rest of the servers are polling. The activity server read the entries of all the nodes and publish a list of nodes including all those nodes who have recently updated their entry. 
 
-\subsection{The Game}
+\subsection{ARM Game}
 
 	We will simulate a very basic game to use as our state to synchronize. 
 	The game has two possible actions \move{\agent}{\position} and \fire{\agent_{i}}{\agent_{j}}. These actions can be executed at any point in the game but the server must validate the actions. 
@@ -46,20 +46,7 @@
 
 	The clients send updates/events to every server. For \fire{\agent_{i}}{\agent_{j}} events the server that is paired with the client with $\agent_{j}$ will determine the outcome. If the \fire{\agent_{i}}{\agent_{j}} event is successful according to the authoritative server a \destroy{\agent_{j}} event is broadcast to every server. All communication is asynchronous without acknowledgements, except for the \destroy{\agent_{j}} event.
 
-\subsection{Two Servers \todo{Remove this section?}}
 
-	In order to make the system more fault tolerant we can add another server to the \clientServer model. Having another server may provide more fault tolerance but a very difficult problem is introduced, server synchronization.
-	
-	\begin{figure}[ht]
-		\includegraphics[width=0.95\linewidth]{../images/client-2server-model-crop.pdf}
-		\caption{\label{figure:Client-2Server} \clientServer model with 2 servers.}
-	\end{figure}
-	
-	The issue with this model is that there are definite server synchronization issues, this is due to the asynchronous message protocol. The asynchronous protocol leads to each server receiving messages in potentially different orders at potentially different times.
-	
-	We have thought of 3 different protocols to deal with this issue: (1) clients accepts the first response from a server, (2) clients accept the response with the smallest simulation time difference and (3) clients have a master server that they accept messages from. Each protocol has pros and cons, (1) can lead to conflict states by accepting messages from different servers. (2) This can induce lag into the system as the client waits for the best server response. (3) can still have issues when servers fail as a new master server will need to be chosen. We choose a combination of (2) and (3) and the reasons for this will be explained in section~\ref{subsec:distributed-servers}.
-	
-	
 \subsection{Distributed Servers}
 \label{subsec:distributed-servers}
 
