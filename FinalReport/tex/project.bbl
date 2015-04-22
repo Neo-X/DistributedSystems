@@ -1,0 +1,20 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Bernier}{2001}]{bernier2001latency}
+Yahn~W Bernier.
+\newblock Latency compensating methods in client/server in-game protocol design
+  and optimization.
+\newblock In {\em Game Developers Conference}, volume 98033, 2001.
+
+\bibitem[\protect\citeauthoryear{Claypool and
+  Claypool}{2006}]{Claypool:2006:LPA:1167838.1167860}
+Mark Claypool and Kajal Claypool.
+\newblock Latency and player actions in online games.
+\newblock {\em Commun. ACM}, 49(11):40--45, November 2006.
+
+\bibitem[\protect\citeauthoryear{Coleman and Cotton}{1995}]{DOOMfaq}
+Scott Coleman and Jay Cotton.
+\newblock The tcp/ip internet doom faq.
+\newblock {\em www.faqs.org}, 1995.
+
+\end{thebibliography}
