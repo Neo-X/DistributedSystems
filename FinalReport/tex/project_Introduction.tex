@@ -2,6 +2,9 @@
 \section{Introduction}
 \label{sec:Intro}
 
+To build an online real-time  multiplayer game, there are two popular approaches known. One approach is called peer-to-peer lockstep, which is based on peer-to-peer architecture. In this approach, all clients start in same initial state and broadcast their every move. The overall performance of the system is dependent on slower clients in the system. Moreover, since the clients use broadcast method to communicate, the approach has large message complexity.
+
+The second approach is based on client-server architecture, in which the game is simulated on the server and the clients send their move-updates to the server. The drawback of this approach is that the server can becomes bottleneck to the system performance and single point of failure. Due to entire game simulation load on the server, this approach is not much scalable.
 
 We propose to construct a distributed \clientServer model in order to gracefully handle fail-stop scenarios. We will use this system to support a simple computer game of a number of agents moving around in a 2D world. We assume no limits on bandwidth and have strong constraints on latency which significantly impacts online game experience~\cite{Claypool:2006:LPA:1167838.1167860}.
 
