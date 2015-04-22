@@ -36,7 +36,7 @@ const GameMaxVelocity float64 = 1.3 // meters/second
 const GameDeltaTime float64 = 0.05 // delta time in microseconds
 
 var GameMessageDeltaTime time.Duration // delta time in microseconds
-const GameTimeLength int64 = 20 * 1000000000
+const GameTimeLength int64 = 120 * 1000000000
 
 
 

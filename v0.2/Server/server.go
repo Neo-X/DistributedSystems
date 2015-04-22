@@ -144,7 +144,7 @@ func main(){
     	}
 	}
 
-	fmt.Println("", header.MyClientName, "complete", "succesful shots", header.ShotsPassed, " failed shots", header.ShotsFailed)
+	fmt.Println("", header.MyClientName, "complete", ";succesful shots", header.ShotsPassed, "; failed shots", header.ShotsFailed)
 }
 
 /*
