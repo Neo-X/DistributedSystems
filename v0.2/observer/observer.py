@@ -12,7 +12,7 @@ sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 sock.bind((UDP_IP, UDP_PORT))
 
-name = 'ball_glut'
+name = 'ARM: Game'
 
 agentDB={}
 def main():
