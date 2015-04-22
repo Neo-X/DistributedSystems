@@ -2,11 +2,32 @@
 \section{Introduction}
 \label{sec:Intro}
 
-To build an online real-time  multiplayer game, there are two popular approaches known. One approach is called peer-to-peer lockstep, which is based on peer-to-peer architecture. In this approach, all clients start in same initial state and broadcast their every move. The overall performance of the system is dependent on slower clients in the system. Moreover, since the clients use broadcast method to communicate, the approach has large message complexity.
+To build an online real-time  multiplayer game, there are two popular methods.
+One, is \ptoP \emph{lockstep}, which is based on the \ptoP architecture.
+In this approach, all nodes start in the same initial state and each node broadcast every move to the all other nodes.
+The overall performance of the system is dependent on slower nodes in the system.
+Moreover, since the nodes use broadcasts to communicate, the method generates a significant volume of messages.
 
-The second approach is based on client-server architecture, in which the game is simulated on the server and the clients send their move-updates to the server. The drawback of this approach is that the server can becomes bottleneck to the system performance and single point of failure. Due to entire game simulation load on the server, this approach is not much scalable.
+A second method is based on the client-server architecture, in which the game is also simulated on a server and each clients sends updates to the server.
+The drawbacks of this method is that the server can become a bottleneck to the system performance and is a single point of failure.
+Also, due to additional game simulation load on the server, this approach is not scalable.
 
-We propose to construct a distributed \clientServer model in order to gracefully handle fail-stop scenarios. We will use this system to support a simple computer game of a number of agents moving around in a 2D world. We assume no limits on bandwidth and have strong constraints on latency which significantly impacts online game experience~\cite{Claypool:2006:LPA:1167838.1167860}.
+We propose to construct a distributed \clientServer model in order to gracefully handle fail-stop scenarios.
+We will use this system to support a simple computer game of a number of agents moving around in a 3D world called the \gamestate.
+We assume no limits on bandwidth and have strong constraints on latency which significantly impacts online game experience~\cite{Claypool:2006:LPA:1167838.1167860}.
+
+This gets very complicated, why have all the infrastructure? Why not just use a peer-to-peer (not lockstep) method? Two reasons, the first is that players could not join a game in progress. Second, the client can (and will) cheat, sending faulty position information to everyone in order to gain an advantage.
+
+It would be nice if we could completely trust clients but we can’t. What if we could trust them a little? If we can trust clients a little we can use them as servers. If we can have a client as server we might be able to reduce latency by choosing the best client to act as the server.
+
+What has not been mentioned in this discussion is fault tolerance. A client/server model has a single point of failure, the server. This can be very bothersome to players of the game that have invested a large amount of time into the game. 
+
+Also having the single server model results in little fault tolerance. Not to mention the company has to construct many expensive servers so the clients can play.
+
+Benefit of this solution:
+Having a more fault tolerant system using a distributed server. 
+Reducing latency by reducing by picking good servers
+All online multiplayer systems are best effort. If we can create a system with the same responsiveness with fault tolerance then it is a success.
 
 	
 
