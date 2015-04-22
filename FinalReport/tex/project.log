@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.2.10)  21 APR 2015 14:17
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.2.10)  21 APR 2015 18:22
 entering extended mode
 **project.tex
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project.tex
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -140,7 +140,7 @@ LaTeX Info: Redefining \] on input line 2666.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\xspace.sty"
 Package: xspace 2009/10/20 v1.13 Space after command names (DPC,MH)
 )
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\named.sty)
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\named.sty)
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\hyperref\hyperref.sty"
 Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
 
@@ -292,7 +292,7 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \WF@everypar=\toks23
 Package: wrapfig 2003/01/31  v 3.6
 )
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\algorithm2e.sty
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\algorithm2e.sty
 Package: algorithm2e 2005/10/04 v3.9 algorithms environments
 \c@AlgoLine=\count116
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\ifthen.sty"
@@ -1059,9 +1059,9 @@ File: siunitx-version-1.cfg 2015/01/21 v2.6e siunitx: Version 1 settings
 . Defining command \requiresiconfigs with sig. 'm' on line 729.
 .................................................
 )
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project_newcomm
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_newcomm
 ands.tex)
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project.aux)
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 50.
 LaTeX Font Info:    ... okay on input line 50.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 50.
@@ -1105,8 +1105,8 @@ LaTeX Info: Redefining \ref on input line 50.
 LaTeX Info: Redefining \pageref on input line 50.
 LaTeX Info: Redefining \nameref on input line 50.
 
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project.out)
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project.out)
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project.out)
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project.out)
 \@outlinefile=\write4
 
 ABD: EveryShipout initializing macros
@@ -2298,17 +2298,17 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 \c__siunitx_mathtt_int=\count196
 
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project_abstrac
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_abstrac
 t.tex)
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project_Introdu
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_Introdu
 ction.tex)
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project_related
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_related
 _work.tex)
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project_Framewo
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_Framewo
 rk.tex [1
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
-<../images/client-server-model-crop.pdf, id=67, 380.42125pt x 259.97125pt>
+<../images/client-server-model-crop.pdf, id=79, 380.42125pt x 259.97125pt>
 File: ../images/client-server-model-crop.pdf Graphic file (type pdf)
 
 <use ../images/client-server-model-crop.pdf>
@@ -2316,7 +2316,7 @@ Package pdftex.def Info: ../images/client-server-model-crop.pdf used on input l
 ine 43.
 (pdftex.def)             Requested size: 151.80084pt x 103.7407pt.
 
-<../images/client-distributed-server-model-crop.pdf, id=68, 299.1175pt x 189.70
+<../images/client-distributed-server-model-crop.pdf, id=80, 299.1175pt x 189.70
 876pt>
 File: ../images/client-distributed-server-model-crop.pdf Graphic file (type pdf
 )
@@ -2332,41 +2332,43 @@ mm/m/it/10 destroy\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 a[]\OT1/cmr/m/n/10 )$
  []
 
 [2])
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project_Results
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_prototy
+pe.tex)
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_Results
 .tex)
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project_Conclus
-ion.tex)
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project.bbl
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project_Conclus
+ion.tex [3 <C:/DATA/Go_Projects/PROJECT/DistributedSystems/FinalReport/images/c
+lient-server-model-crop.pdf> <C:/DATA/Go_Projects/PROJECT/DistributedSystems/Fi
+nalReport/images/client-distributed-server-model-crop.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/DATA/Go_Projects/PROJECT/DistributedSyste
+ms/FinalReport/images/client-distributed-server-model-crop.pdf): PDF inclusion:
+ multiple pdfs with page group included in a single page
+>]) (C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project.bbl
+
 Underfull \hbox (badness 4454) in paragraph at lines 4--8
 []\OT1/cmr/m/n/10 Yahn W Bernier.  La-tency com-pen-sat-ing meth-ods in
  []
 
-[3 <C:/DATA/Go_Projects/PROJECT/DistributedSystems/finalReport/images/client-se
-rver-model-crop.pdf> <C:/DATA/Go_Projects/PROJECT/DistributedSystems/finalRepor
-t/images/client-distributed-server-model-crop.pdf
+) [4]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 79.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 79.
 
-pdfTeX warning: pdflatex.exe (file C:/DATA/Go_Projects/PROJECT/DistributedSyste
-ms/finalReport/images/client-distributed-server-model-crop.pdf): PDF inclusion:
- multiple pdfs with page group included in a single page
->]) [4]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 77.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 77.
-
-(C:\DATA\Go_Projects\PROJECT\DistributedSystems\finalReport\tex\project.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 77.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 77.
+(C:\DATA\Go_Projects\PROJECT\DistributedSystems\FinalReport\tex\project.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 79.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 79.
 Package rerunfilecheck Info: File `project.out' has not changed.
-(rerunfilecheck)             Checksum: 00FF9079BB751507A1C9B72557BA0A09;565.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 77.
+(rerunfilecheck)             Checksum: B70646976726EC238D0F0C6981DC1A14;744.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 79.
  ) 
 Here is how much of TeX's memory you used:
- 28464 strings out of 493921
- 580657 string characters out of 3144876
+ 28474 strings out of 493921
+ 580937 string characters out of 3144876
  673832 words of memory out of 3000000
- 31324 multiletter control sequences out of 15000+200000
+ 31328 multiletter control sequences out of 15000+200000
  15590 words of font info for 61 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 55i,13n,65p,10395b,939s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 55i,13n,65p,10395b,965s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/P
@@ -2377,9 +2379,9 @@ iles (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program File
 s (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files (
 x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files (x86)
 /MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on project.pdf (4 pages, 159966 bytes).
+Output written on project.pdf (4 pages, 162679 bytes).
 PDF statistics:
- 155 PDF objects out of 1000 (max. 8388607)
- 30 named destinations out of 1000 (max. 500000)
- 103 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 168 PDF objects out of 1000 (max. 8388607)
+ 33 named destinations out of 1000 (max. 500000)
+ 127 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -6,5 +6,8 @@
 \BOOKMARK [2][-]{subsection.3.3}{The Game}{section.3}% 6
 \BOOKMARK [2][-]{subsection.3.4}{Distributed Servers}{section.3}% 7
 \BOOKMARK [3][-]{subsubsection.3.4.1}{Protocol and Messaging}{subsection.3.4}% 8
-\BOOKMARK [1][-]{section.4}{Evaluation}{}% 9
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 10
+\BOOKMARK [1][-]{section.4}{Prototype}{}% 9
+\BOOKMARK [2][-]{subsection.4.1}{Data Structures}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.2}{Flow of Controls}{section.4}% 11
+\BOOKMARK [1][-]{section.5}{Evaluation}{}% 12
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 13
