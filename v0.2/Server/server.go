@@ -162,10 +162,11 @@ func CheckForNewNodes() {
 			members := strings.Split(activeMembers,  ",")
 			// add any new members
 			for i := 0; i < len(members); i++ {
-				
+				/*			
 				if (members[i] == activityserver.ActivityServerKey) { // skip activity server
 					continue
 				}
+				*/
 				if _, ok := header.Nodes[members[i]]; ok {
 				    // do nothing if it already exsists
 				} else {
