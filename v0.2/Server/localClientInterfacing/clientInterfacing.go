@@ -95,9 +95,11 @@ func ServiceFireReq(conn *net.UDPConn, msg dsgame.Message){
 		// verify if it hits me
 		if (dsgame.RayHitsAgent(header.AgentDB[header.MyAgent.Name].Location,msg.Location,msg.Target)) { // if it hits me, broadcast destroy msg
 			RespawnAgent()
+			header.ShotsPassed+=1
 			BroadcastDestroyMeReq(msg)
 		} else { //if doesn't, ignore msg
 			fmt.Println("----->I updated my loc, just before getting hit")
+			header.ShotsFailed+=1
 		}
 	}
 	

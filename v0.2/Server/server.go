@@ -104,8 +104,8 @@ func main(){
   defer conn.Close()
 
 	var buf []byte = make([]byte, 1500)   
-
-
+	
+	_startTime := time.Now().UnixNano()
   for n := int64(0); n >= 0; n++ {
 	 	n,address, err := conn.ReadFromUDP(buf)
 	 	if err != nil {
@@ -139,9 +139,12 @@ func main(){
 */
 
 		}
+    	if ( (time.Now().UnixNano() - _startTime) > dsgame.GameTimeLength ){
+    		break;
+    	}
 	}
 
-
+	fmt.Println("", header.MyClientName, "complete", "succesful shots", header.ShotsPassed, " failed shots", header.ShotsFailed)
 }
 
 /*

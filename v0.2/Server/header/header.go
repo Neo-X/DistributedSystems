@@ -39,3 +39,6 @@ type AgentDB_ struct {
 }
 
 var IpToAgentDB map[string]AgentDB_  // [IP:Port -- >  AgentDB]
+
+var ShotsFailed int64 = 0
+var ShotsPassed int64 = 0

@@ -121,6 +121,7 @@ func main(){
 	// 2. call sendUpdateLocation()
 
 	conn.Close()
+	fmt.Println("", header.MyAgent.Name, "complete") 
 }
 
 
@@ -128,6 +129,7 @@ func main(){
 func RunAgent(conn *net.UDPConn) {
 	
 	fireTime := dsgame.GetNextFireTime()
+	_startTime := time.Now().UnixNano()
 	for {
 
 		header.MyAgent.TimeStamp += 1
@@ -155,6 +157,9 @@ func RunAgent(conn *net.UDPConn) {
 		}
 		fireTime = fireTime - 1;
 		time.Sleep(dsgame.GameMessageDeltaTime)
+		if ( (time.Now().UnixNano() - _startTime) > dsgame.GameTimeLength ){
+    		break;
+    	}
 	}
 	
 }
