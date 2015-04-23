@@ -4,7 +4,7 @@
 \label{sec:evaluation}
 
 The system design is evaluated two ways. Primarily, the methods ability to handle failure. To cope with the failure gracefully and cause the least amount of suspension in the gameplay as possible. A secondary goal is to maintain consistency of the \gamestate as more nodes are added to the system.
-\todo{We don't measure latency with respect to the number of nodes in the system. This could be done by examining the round trip time for fire messages that are successful.}
+% \todo{We don't measure latency with respect to the number of nodes in the system. This could be done by examining the round trip time for fire messages that are successful.}
 
 \subsection{Fault Tolerance}
 
@@ -63,7 +63,7 @@ Each client will send an update of its location every $100ms$ and will update it
 
 \begin{table}[htb!]
 \centering
-	\begin{tabular}{p{0.2\linewidth} | p{0.2\linewidth} | p{0.6\linewidth}}
+	\begin{tabular}{p{0.2\linewidth} | p{0.2\linewidth} | p{0.5\linewidth}}
 	\textbf{Attribute name} & \textbf{Type} & \textbf{Description} \\ \hline
 	\gamestate & map$<$string, Agent$>$ & map of agent identifiers to agent objects in the game \\ \hline
 	Nodes & map$<$string, *net.UDPConn$>$ & map of nodes to the UDP connections to send messages to the nodes \\ \hline
