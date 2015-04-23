@@ -53,6 +53,7 @@ type Message struct {
 	Client string // This an identifier for the **node** this message is originating from (example node0)  
 	Agent string // Identifier to know which agent this message originated from  
 	TimeStamp int64 // This is more of a vector clock that is relative to the Agent  
+	// NodeTimeStamp int64 // This is used for performance evaluation, typically a time is written into it for later processing  
 	Location s3dm.V3 // This is a location that could be used in processing, for example a update location message  
 	Target s3dm.V3 // This is a **Direction** (it is poorly named) that is used for the fire action in determining who gets shot.
 }

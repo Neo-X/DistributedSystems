@@ -2,10 +2,17 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Delivery Dates:
-\begin{enumerate}[topsep=2pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
-	\item March 21: Iteration 1 (Single Server Prototype)
-	\item April 02:  Iteration 2 (Distributed Server Prototype)
-	\item April 05: Project Report and Presentation Slides
-	\item April 12: Testing and Refining
-\end{enumerate}
+We have presented a prototype design for a distributed \clientServer system that has a communication structure similar to a \ptoP model. The system supports a real-time online multiplayer game with distributed state.
+The design gracefully handles node failure without inducing any game play suspension. 
+The system demonstrates promise in its ability to scale in the number of nodes with respect to the consistency of the system. 
+
+\noindent \textbf{Limitations}
+The system can suffer from DOS attacks by nodes that have a desire to reject fire messages.
+There is also a significant amount of messaging in the system due to the \ptoP structure between nodes.
+
+\noindent \textbf{Future Work}
+The scalability of the system could be further improved by using a spatial partitioning scheme that would limit the number of relevant nodes each node should keep track of.
+There are additional methods that could be used to protect against malicious clients. 
+One example is to encrypt the messages sent to nodes. 
+This way a malicious client won't know which messages are being ignored, in-turn that client's own information will be out of date and rejected by other nodes.
+Another option is to send fire messages to all, or a random subset, of nodes and have the majority determine the outcome of the action.
