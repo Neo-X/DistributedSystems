@@ -5,7 +5,7 @@ The system is a prototype of distributed system that supports an Asynchronous Re
 The folder [v0.2] contains the current stable release.
 
 ## System Architecture
-![Alt text](https://github.com/Neo-X/DistributedSystems/blob/master/FinalReport/images/client-distributed-server-model-Activity.png "System Architecture")
+![Alt text](https://github.com/Neo-X/DistributedSystems/blob/master/FinalReport/images/client-distributed-server-model-Activity.svg "System Architecture")
 
 
 ##Running the System
