@@ -3,7 +3,8 @@
 \section{Evaluation}
 \label{sec:evaluation}
 
-We plan to evaluate our method in two ways. Primarily, the methods ability to handle failure. To cope with the failure gracefully and cause the least amount of disturbance in the gameplay as possible. A secondary goal is to keep the latency of the game down as more clients and server are added to the system.
+The system design is evaluated two ways. Primarily, the methods ability to handle failure. To cope with the failure gracefully and cause the least amount of suspension in the gameplay as possible. A secondary goal is to maintain consistency of the \gamestate as more nodes are added to the system.
+\todo{We don't measure latency with respect to the number of nodes in the system. This could be done by examining the round trip time for fire messages that are successful.}
 
 \subsection{Fault Tolerance}
 
@@ -16,6 +17,8 @@ During this time the agent for that node still exists in the game but is immobil
 
 Overall the system works as desired for graceful fault tolerance.
 When a node fails the agent exists in the \gamestate for every node for a short period (a few seconds) after which all data related to the agent is removed from the \gamestate.
+A graph of the latency is not shown as there is no latency induced by a failed node.
+In fact if a node fails latency should decrease thanks to the number of messages in the system will decrees.
 
 \subsection{Scalability vs Consistency}
 
@@ -27,20 +30,26 @@ A successful shot is one that is initiated by a client, forwarded to the client'
 The shot is successful if the last server agrees with the result of the shot. 
 The occurrence of successful shot implies that $3$ \gamestates where at least partial consistent.
 We measure the scalability by increasing the number of nodes in the system and comparing the relative number of fire events that are successful. 
-	\begin{figure}[ht]
+	\begin{figure}[htb!]
 	\centering
-		\includegraphics[width=0.95\linewidth]{../images/agents-vs-consistency-via-shots-crop.pdf}
-		agents
-		\caption{\label{figure:nodes-vs-shots-consistency} A chart of the relative numbers of successful shots vs failed shots. As the number of nodes in the system increases the relative number of successful shots decreases.}
+		\includegraphics[width=0.85\linewidth]{../images/agents-vs-consistency-via-shots-crop.pdf} \\
+		Agents \\
+		\includegraphics[width=0.85\linewidth]{../images/shots-vs-agents-crop.pdf} \\
+	%	agents
+		\caption{\label{figure:nodes-vs-shots-consistency} On the top a chart of the relative numbers of successful shots vs failed shots. As the number of nodes in the system increases the relative number of successful shots decreases. On the bottom a line plot of the number of possible shots fired. The number of possible shots increases linearly with the number of nodes in the system.}
 	\end{figure}
-Figure~\ref{figure:nodes-vs-shots-consistency} shows us how well the systems consistency copes with the number of nodes in the system. As expected, as the number of nodes increases the number of successful shots decreases. The decrease in successful shots is a proxy for the system consistency. 
+Figure~\ref{figure:nodes-vs-shots-consistency}(top) shows us how well the system's consistency copes with the number of nodes in the system.
+As expected, as the number of nodes increases the number of successful shots decreases.
+The decrease in successful shots is a proxy for the system consistency. 
 This is the result of increased latency and dropped packets in the system. 
+The total number of possible shots\footnote{A possible shot is a shot one node believes to be correct.} is shown in Figure~\ref{figure:nodes-vs-shots-consistency}(bottom), exhibiting a linear trend between the number of nodes and the total number of possible shots.
+The linear increase in shots tells us that the consistency analysis was not dependant on a non-linear growth in the number of possible shots due to packing more agents in the same size space.
 
 \subsection{Game Simulation}
 
 Here a description of the game is given, along with some features of the client Artificial Intelligence. The game is confined to a 3D box of dimensions $10x10x10$. Inside the box all the agents are simulated using a pseudo randomized AI. A visualization of the \gamestate is shown in Figure~\ref{figure:game-renders}(a and b).
 
-\begin{figure}[htb]
+\begin{figure}[htb!]
 \centering
 	\includegraphics[width=0.45\linewidth]{../images/10-agents-render.png}
 	\includegraphics[width=0.45\linewidth]{../images/30-agents-render.png}	
@@ -52,7 +61,7 @@ Here a description of the game is given, along with some features of the client 
 
 Each client will send an update of its location every $100ms$ and will update its own internal state every $100ms$ as well. The client can updated its state at faster intervals if desired. Each node will update its status in the \kvService every 2 seconds. The \activityServer will collect the node updates and post the updated list of active nodes every second. If a node dose not post an update for a duration of $6$ seconds, it is removed from the list of active nodes. In Table~\ref{table:gamestate-discription} the data a node stores to support the system is described. The \gamestate takes up the most amount of memory and it the most frequently updated structure.
 
-\begin{table}[htb]
+\begin{table}[htb!]
 \centering
 	\begin{tabular}{p{0.2\linewidth} | p{0.2\linewidth} | p{0.6\linewidth}}
 	\textbf{Attribute name} & \textbf{Type} & \textbf{Description} \\ \hline
