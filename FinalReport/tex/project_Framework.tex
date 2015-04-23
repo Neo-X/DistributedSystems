@@ -1,11 +1,6 @@
 
 \section{Methodology}
 \label{sec:methodology}
-\todo{This section is should be more of a high level discussion about methods used, why we chose them and the system/game}
-
-\ravjot{Feel free to use this to make comments in the paper you want me to look at.}
-
-\glen{I will use this}
 
 	In this section we outline our solution to our distributed state synchronization design. We discus what protocols are used, how the clients and servers communicate and the example game constructed for this system.
 	
@@ -30,10 +25,10 @@
 	This way the server keeps the true state of the game and informs the clients of valid updates to the server's state. To perform these operations the server needs to have state for the currently active clients and its own version of the game state.
 
 \subsection{The Activity Server}
-	The purpose of Activity Server is to support the architecture of the System which includes allowing a new node to join th system and publishing the list of nodes which are currently online. The Activity Server doesn't do any kind og game simulation niether involves in game semantic actions.
+	The purpose of \activityServer is to support the architecture of the system which includes allowing a new node to join the system and publishing the list of nodes which are currently online. The \activityServer doesn't do any kind of game simulation niether get involves in game semantic actions.
 
-\subsection{The KV-Service}
-	The KV-Service is a key-value service which used for all communication among the nodes and the activity server that is required to maintain the system. The servers periodically update their entry in the KV-Service. The activity server polls with twice the period rest of the servers are polling. The activity server read the entries of all the nodes and publish a list of nodes including all those nodes who have recently updated their entry. 
+\subsection{The Key-Value Service}
+	The \kvService is a key-value service which used for all communication among the nodes and the \activityServer that is required to maintain the system. The nodes periodically update their entry in the \kvService. The \activityServer polls with twice the period the rest of the nodes are polling. The \activityServer read the entries of all the nodes and publish a list of nodes including all those nodes who have recently updated their entry. 
 
 \subsection{ARM Game}
 
@@ -44,7 +39,7 @@
 	
 \subsubsection{Protocol and Messaging}
 
-	The clients send updates/events to every server. For \fire{\agent_{i}}{\agent_{j}} events the server that is paired with the client with $\agent_{j}$ will determine the outcome. If the \fire{\agent_{i}}{\agent_{j}} event is successful according to the authoritative server a \destroy{\agent_{j}} event is broadcast to every server. All communication is asynchronous without acknowledgements, except for the \destroy{\agent_{j}} event.
+	The clients send updates/events to every server. For \fire{\agent_{i}}{\agent_{j}} events the server that is paired with the client with $\agent_{j}$ will determine the outcome. If the \fire{\agent_{i}}{\agent_{j}} event is successful according to the authoritative server a \destroy{\agent_{j}} event is broadcast to every server. All communication is asynchronous without acknowledgements.
 
 
 \subsection{Distributed Servers}

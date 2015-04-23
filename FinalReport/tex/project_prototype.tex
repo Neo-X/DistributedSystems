@@ -1,34 +1,38 @@
 \section{Prototype}
 \label{sec:prototype}
-\todo{This section is more about implementation and digs deeper into the RELAVANT AND INTERESTING parts of the system.}
+
 	In this section, we will describe the working of the prototype system we developed.
 \subsection{Data Structures}
-	The system uses HashMap to store the game state where key is the node name and value is Agent structure (as shown below).
+	The system uses \emph{hashmap} to store the game state where node name act as key. The game state is stored as value in \emph{hashmap} in the form of structure as shown Table~\ref{table:gamestate-struct}.
 
-\ravjot{It is a structure. I am not sure how can I represent it using pseudocode }
-	type Agent struct {
-		Name string 
-		Location s3dm.V3 
-		TimeStamp int64 
-		LastUpdateTime int64 
-		Direction s3dm.V3 
-	}
 
-	The Name is an identifier for an agent, alloted by activity server while joining the system. The Location represent current location of the agent. We used a simple 3D maths liberary for creating a 3D environment for the game. The TimeStamp field act as a vector clock for the agent which could be used to determine the order of the events for an agent.
-	The lastUpdateTime represents the last time the server has received a message from the agent. The Direction represents the velocity of the agent with include magnitude and direction.
+\begin{table}[htb]
+	\centering
+	\begin{tabular}{p{0.2\linewidth} | p{0.2\linewidth} | p{0.6\linewidth}}
+		\textbf{Attribute name} & \textbf{Type} & \textbf{Description} \\ \hline
+		Name & string & identifier for an agent, alloted by \activityServer while joining the system \\ \hline
+		Location & s3dm.V3 & current location of the agent \\ \hline
+		TimeStamp & int64  & vector clock for the agent \\  \hline
+		LastUpdateTime & int64 & the last time the node has received a message from the agent\\ \hline
+		Direction & s3dm.V3 & the velocity of the agent with include magnitude and direction \\ \hline	
+	\end{tabular}
+	\caption{\label{table:gamestate-struct} Layout of an \agentstate.}
+\end{table}
+
 
 \subsection{Starting the System}
-	In order to start the system, first of all the KV-Service and Activity Server are started.
+	In order to start the system, first of all the \kvService and \activityServer are started.
 	
 \subsection{Registeration}
-	For a  new node to join the game, the node has to register itself in the system. The node registration is carried out at the Activity Server. The Server at new joining node sends Registration requests to the Activity Server, which respond back with the node and agent identifier along with the initial location of the agent in the game.
+	For a  new node to join the game, the node has to register itself in the system. The node registration is carried out through \activityServer. The \localServer at new joining node sends registration request to the \activityServer, which responds back with the node and agent identifier, along with the initial location of the agent in the game.
 
 \subsection{Game State Construction}
-	The next step after registeration is the game state construction on the new joining node. For this to take place, the new joining node waits for a certain period of time to receive location broadcast from all of the already present nodes in the system. Once the game state is constructed, the node can start simulating the game.	
+	The next step after registeration is the \gameStateConstruction on the new joining node. For this to take place, the new joining node waits for a certain period of time to receive location broadcasts from all of the already present nodes in the system, which carries  the latest location of an agent. Once the \gamestate is constructed, the new joined node starts simulating the game.	
+
 \subsection{Move action Execution}
-	The client simulate an agent randomly moving and firing around. As soon as, the position of agent changes, the client sends an updateLocation request to corressponding server. The server, based on position of agent in its game state, check if the move is valid or not. 
-	If the move is found invalid, the server rejects the request and overwrites the position of agent in the client game state to the one present in the server game state.
-	If the move is valid, the server broadcast the message to all the servers in the system which update their own game state as well as forward it to their corressponding clients. The clients also update their game state.
+	For our prototype, the clients simulate an agent randomly moving and firing around. As soon as, the position of agent changes, the client sends an \move{\agent}{\position} request to corressponding \localServer. The \localServer based on position of agent in its \gamestate, verifies the validity of request. 
+	If it is found invalid, the \localServer rejects the request and overwrites the position of agent in the client \gamestate to the one present in its own \gamestate.
+	If the request is valid, the \localServer broadcasts the received request to all of the \localServers in the system which update their own \gamestate as well as forward it to their corressponding clients. The clients also update their \gamestates.
 
 \subsection{Fire action Execution}
-	The execution of fire command is very similar to the move. The client sends a fire request to the local server. The local server, based on its own game state, calculates if the shot hit any of the agents in the game. If it doesn't, the request is rejected. If it does, the server forwards the request to that particular server since that server is expected to have the most updated location of the agent being hit. The recipient server using its own game state verifies the hit. If the hit is unsuccessful, the request is simply ignored. Whereas if the hit is successful, the recepient server broadcast a Destroy message to all the servers in the system which leads to respawning of agent.
+	The execution of \fire{\agent_{i}}{\agent_{j}} command is very similar to the move action execution. The client sends a fire request to its \localServer. The \localServer, based on its own \gamestate, calculates if the shot hit any of the agents in the game. If it doesn't, the request is ignored. If it does, the \localServer forwards the request to that particular \localServer since that \localServer is expected to have the most updated location of the agent being hit. The recipient \localServer using its own \gamestate verifies the hit. If it finds the hit unsuccessful, the request is simply ignored. Whereas if the hit is successful, the recepient \localServer broadcasts a \destroy{\agent_{j}} message to all the \localServers in the system.
