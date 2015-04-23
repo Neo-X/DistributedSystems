@@ -2,60 +2,46 @@
 \section{Methodology}
 \label{sec:methodology}
 
-	In this section we outline our solution to our distributed state synchronization design. We discus what protocols are used, how the clients and servers communicate and the example game constructed for this system.
-	
-\subsection{The Clients}
+	This section outlines our system design to overcome the targetted problem of distributed state sychronization design. We propose a distributed server model (see Figure~\ref{figure:server-models}(b)) to enable better failure handling in our system. In this model,the clients are paired with the servers that are running on the same machine to share their fate. The paired server validates the actions performed by corresponding client and process it further if the actions are found valid. Following subsections will discuss each component in the proposed architecture in detail.
 
-	The client locally simulates its own version of the game. To support this the client needs to keep a list of the agents controlled by other clients in the game and the most recent location of each agent. This information will be stored in a \emph{hashmap}. After every frame is rendered in the game the client will broadcast a position update to all servers.
-	
-\subsection{The Servers}
-
-	The server simulates its own version of the game. The server is not used just to reduce message passing but also to act as an authority over clients, to prevent malicious clients from propagating invalid information.
-	
-	In the simulation loop for the server a number of actions occur
-	\begin{enumerate}[topsep=2pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
-		\item the server accepts event messages and puts them in a queue for processing
-		\item The server accepts position updates from clients
-		\item The server verifies these updates to be valid
-		\item The server's local copy of agent locations is updated
-		\item The server processes any events in its event queue
-		\item If events are valid, update server's game state and broadcast the result
-	\end{enumerate}
-	
-	This way the server keeps the true state of the game and informs the clients of valid updates to the server's state. To perform these operations the server needs to have state for the currently active clients and its own version of the game state.
-
-\subsection{The Activity Server}
-	The purpose of \activityServer is to support the architecture of the system which includes allowing a new node to join the system and publishing the list of nodes which are currently online. The \activityServer doesn't do any kind of game simulation niether get involves in game semantic actions.
-
-\subsection{The Key-Value Service}
-	The \kvService is a key-value service which used for all communication among the nodes and the \activityServer that is required to maintain the system. The nodes periodically update their entry in the \kvService. The \activityServer polls with twice the period the rest of the nodes are polling. The \activityServer read the entries of all the nodes and publish a list of nodes including all those nodes who have recently updated their entry. 
-
-\subsection{ARM Game}
-
-	We will simulate a very basic game to use as our state to synchronize. 
-	The game has two possible actions \move{\agent}{\position} and \fire{\agent_{i}}{\agent_{j}}. These actions can be executed at any point in the game but the server must validate the actions. 
-	
-	In order to simulate the game, information is needed on the other agents in the game. The only data stored for each agent is the agent's current location. The information needed for the game will be provided from the server or client the game is being simulated on. Computer animations and therefore game simulations use simulation time, similar to a vector clock, for synchronizing events.
-	
-\subsubsection{Protocol and Messaging}
-
-	The clients send updates/events to every server. For \fire{\agent_{i}}{\agent_{j}} events the server that is paired with the client with $\agent_{j}$ will determine the outcome. If the \fire{\agent_{i}}{\agent_{j}} event is successful according to the authoritative server a \destroy{\agent_{j}} event is broadcast to every server. All communication is asynchronous without acknowledgements.
-
-
-\subsection{Distributed Servers}
-\label{subsec:distributed-servers}
-
-	We construct a distributed server model (see Figure~\ref{figure:server-models}(b)) to enable better failure handling in our system. Each client is paired with a server which is running on the same machine. The paired server validates the actions performed by client and process it further if the action is found valid. The authoritative server for a particular client depends on the event/action being processed. 
-	
-	\begin{figure}[ht]
+\begin{figure}[ht]
 	\centering
 	\begin{tabular}{c c}
 		Client-Server & Distributed Server \\
-		\includegraphics[width=0.44\linewidth]{../images/client-server-model-crop.pdf} &
+		\includegraphics[width=0.44\linewidth]{../images/client-distributed-server-model-Activity.pdf} &
 		\includegraphics[width=0.48\linewidth]{../images/client-distributed-server-model-crop.pdf} \\
 		(a) & (b)
 	\end{tabular}
-
+	
 	\caption{\label{figure:server-models} The first model (a) is an example \clientServer model. In this model all of the clients send updates to the server and the server send updates out to the clients. In the second model (b) the server is distributed and clients communicate with many servers.}
-	\end{figure}
+\end{figure}
+
+
+\subsection{The Client}
+
+	In general sense, a client provides an interface to the user/player, through which a player can give command to his character (we refered it as agent) in the game. The client runs a local version of the game, where the player's commands are executed. The commands executed by player on his agent produce changes in the state of the agent. 
+	
+	Each client in the system is paired up with a server (called as \localServer) which act as a proxy to all distributed servers in the system. Every change in the state of agent is forwarded to the \localServer. 
+	
+\subsection{The (Local) Server}
+
+	The \localServer also runs its own independent version of the game. The state of game at \localServer is guided in coordination with rest of the \localServers in the system. The purpose of \localServer is not just to reduce message passing but also to act as a validator/authority over client's action, to prevent malicious client from propagating invalid information.The authoritative server for a particular client depends on the event/action being processed. Any client request is first forwarded to its \localServer where it is validated against the current state of game running at \localServer. The request is processed further only if the requested action is found valid, else the action is rejected by the \localServer. 
+	
+\subsection{The Activity Server}
+	The purpose of \activityServer is to support the architecture of the system, which includes allowing a new node to join the system and publishing the list of nodes which are currently online. The \activityServer doesn't do any kind of game simulation niether get involves in game semantic actions.
+
+\subsection{The Key-Value Service}
+	The \kvService is a key-value service which act as a communication channel among different system components. The sole purpose of this service is to help the \activityServer to maintain the system. The nodes periodically update their entry in the \kvService and based on those entries, the \activityServer publish a list of nodes which are currently active. This list is later fetched by the nodes to know which all nodes are currenly online.
+
+\subsection{ARM Game}
+
+	ARM Game is an Asynchronous Real-time Multiplayer Game. It consists of two very basic actions for the players (charactrized as agent in the game). The first action is Move which is represented as \move{\agent}{\position}, where the first argument represents the agent intended to move and the second argument is its new proposed position. The other action is Fire which is represented as \fire{\position}{\direction}, where the first argument represents current position of the agent firing the shot and the second argument represents the direction in which the shot is fired.
+	
+	In order to simulate the game, information is needed on the other agents in the game. The required information corresponding to each agent is called as \agentstate. The attributes of \agentstate are shown in Table~\ref{table:gamestate-struct}. A collective database storing \agentstate of all agents in the game is  known as \gamestate.  
+	
+\subsubsection{Protocol and Messaging}
+
+	The clients send request to their \localServers. The \localServer validates the request againts its own version of \gamestate. If \localServer finds it valid, then only the request is forwarded to the authoritative \localServers over that agent for that particular action. All communications are asynchronous without acknowledgements. We used JSON to facilitate messaging is the system.
+
+
 	
