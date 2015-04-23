@@ -1,7 +1,7 @@
 # ARM Game With Distributed States
 
 ##Description
-This system support an Asynchronous Real-time Multiplayer Game (ARM Game).
+The system is a prototype of distributed system that supports an Asynchronous Real-time Multiplayer Game (ARM Game). 
 
 ##Running the System
 
@@ -14,7 +14,6 @@ This system support an Asynchronous Real-time Multiplayer Game (ARM Game).
 5) Start the clients for the servers: ./client -serverAddress 127.0.0.1:10000
 6) Start the clients for the servers: ./client -serverAddress 127.0.0.1:10001
 
-Lots of processes...
 ###Run Large Number of Nodes
 
 1) Start the kvservice: ./kvservicemain 127.0.0.1:9999 0
