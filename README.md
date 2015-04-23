@@ -3,7 +3,12 @@
 ##Description
 The system is a prototype of distributed system that supports an Asynchronous Real-time Multiplayer Game (ARM Game). 
 
+## System Architecture
+![Alt text](https://github.com/Neo-X/DistributedSystems/blob/master/FinalReport/images/client-distributed-server-model-Activity.png "System Architecture")
+
+
 ##Running the System
+The system has many different component which are required to run separately.
 
 ###Order for running the system
 
@@ -21,8 +26,7 @@ The system is a prototype of distributed system that supports an Asynchronous Re
 - Start some servers: ./startServers.sh 30
 - Start some clients: ./startClients.sh 30
 
-You will probably need to execute killall server and killall client to end the processes.
 
 
 ##Errors/Bugs:
-There are still few open issues.
+There can be a bug or race condition between the ServiceLocationUpdate and Respawn agent. Due to the number of threads the location could be updated after it is set un Respawn by locationUpdate and the respawn is lost.
