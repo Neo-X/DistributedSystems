@@ -7,13 +7,13 @@
 \begin{figure}[ht]
 	\centering
 	\begin{tabular}{c c}
-		Client-Server & Distributed Server \\
-		\includegraphics[width=0.44\linewidth]{../images/client-distributed-server-model-Activity.pdf} &
-		\includegraphics[width=0.48\linewidth]{../images/client-distributed-server-model-crop.pdf} \\
+		
+		\includegraphics[width=0.52\linewidth]{../images/client-distributed-server-model-Activity1-crop.pdf} &
+		\includegraphics[width=0.40\linewidth]{../images/client-distributed-server-model-crop.pdf} \\
 		(a) & (b)
 	\end{tabular}
 	
-	\caption{\label{figure:server-models} The first model (a) is an example \clientServer model. In this model all of the clients send updates to the server and the server send updates out to the clients. In the second model (b) the server is distributed and clients communicate with many servers.}
+	\caption{\label{figure:server-models} The first figure (a) shows servers interation with \activityServer and \kvService. In this model all of the servers periodically update their entry in the \kvService and the \activityServer periodically publish a list of online servers. The interation between \activityServer and servers only happens at the time joining In the second model.(b) shows server-server interactions in general.}
 \end{figure}
 
 
