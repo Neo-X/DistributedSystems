@@ -30,7 +30,7 @@ The system has many different component which are required to run separately.
 ### Simulation Video
 
 You can find a video of the game simulation here
-![Video of the game simulation](http://www.fracturedplane.com/projects/ArmGame/game-video.mp4 "Simulation Video")
+[Video of the game simulation](http://www.fracturedplane.com/projects/ArmGame/game-video.mp4 "Simulation Video")
 
 ##Errors/Bugs:
 There can be a bug or race condition between the ServiceLocationUpdate and Respawn agent. Due to the number of threads the location could be updated after it is set un Respawn by locationUpdate and the respawn is lost.
