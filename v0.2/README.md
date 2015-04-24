@@ -1,7 +1,8 @@
-# ARM Game With Distributed States
+# ARM Game With Distributed State [v0.2]
 
 ##Description
 The system is a prototype of distributed system that supports an Asynchronous Real-time Multiplayer Game (ARM Game). 
+The folder [v0.2] contains the current stable release.
 
 ## System Architecture
 ![Alt text](https://github.com/Neo-X/DistributedSystems/blob/master/FinalReport/images/client-distributed-server-model-Activity.png "System Architecture")
@@ -26,7 +27,10 @@ The system has many different component which are required to run separately.
 - Start some servers: ./startServers.sh 30
 - Start some clients: ./startClients.sh 30
 
+### Simulation Video
 
+You can find a video of the game simulation here
+[Video of the game simulation](http://www.fracturedplane.com/projects/ArmGame/game-video.mp4 "Simulation Video")
 
 ##Errors/Bugs:
 There can be a bug or race condition between the ServiceLocationUpdate and Respawn agent. Due to the number of threads the location could be updated after it is set un Respawn by locationUpdate and the respawn is lost.
